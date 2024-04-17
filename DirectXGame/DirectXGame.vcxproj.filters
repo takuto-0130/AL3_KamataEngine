@@ -52,6 +52,18 @@
     <Filter Include="ソース ファイル\2d">
       <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\MyClass">
+      <UniqueIdentifier>{f03afabd-79ad-4b24-aecf-b6b786b0a068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\MyClass\Player">
+      <UniqueIdentifier>{89eb9520-5af4-4f92-966b-1eba0dd99b52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Myclass">
+      <UniqueIdentifier>{f0352f04-4e0a-4137-877d-d32bc297bf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Myclass\Player">
+      <UniqueIdentifier>{036acab7-891f-4d66-a7d5-4a4107f3b3eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="2d\ImGuiManager.cpp">
       <Filter>ソース ファイル\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\Player\Player.cpp">
+      <Filter>ソース ファイル\MyClass\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +172,9 @@
     </ClInclude>
     <ClInclude Include="3d\ObjectColor.h">
       <Filter>ヘッダー ファイル\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\Player\Player.h">
+      <Filter>ヘッダー ファイル\Myclass\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
