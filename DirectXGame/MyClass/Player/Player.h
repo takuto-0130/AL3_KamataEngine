@@ -34,4 +34,5 @@ private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t texHandle_ = 0;
+	Input* input_ = nullptr;
 };

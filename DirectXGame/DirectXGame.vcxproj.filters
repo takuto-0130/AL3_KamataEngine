@@ -64,6 +64,9 @@
     <Filter Include="ヘッダー ファイル\Myclass\Player">
       <UniqueIdentifier>{036acab7-891f-4d66-a7d5-4a4107f3b3eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\MyClass\math">
+      <UniqueIdentifier>{81f63cac-27ab-41c7-b140-6ecf19d75d79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -83,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="MyClass\Player\Player.cpp">
       <Filter>ソース ファイル\MyClass\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\math\Matrix4x4Func.cpp">
+      <Filter>ソース ファイル\MyClass\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="MyClass\Player\Player.h">
       <Filter>ヘッダー ファイル\Myclass\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\math\Matrix4x4Func.h">
+      <Filter>ソース ファイル\MyClass\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
