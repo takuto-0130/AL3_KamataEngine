@@ -107,11 +107,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2d\ImGuiManager.cpp" />
+    <ClCompile Include="3d\WorldTransformEx.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyClass\math\Matrix4x4Func.cpp" />
     <ClCompile Include="MyClass\Player\Player.cpp" />
+    <ClCompile Include="MyClass\Player\PlayerBullet.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +147,7 @@
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MyClass\math\Matrix4x4Func.h" />
     <ClInclude Include="MyClass\Player\Player.h" />
+    <ClInclude Include="MyClass\Player\PlayerBullet.h" />
     <ClInclude Include="scene\GameScene.h" />
   </ItemGroup>
   <ItemGroup>

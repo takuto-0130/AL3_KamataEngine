@@ -67,6 +67,12 @@
     <Filter Include="ソース ファイル\MyClass\math">
       <UniqueIdentifier>{81f63cac-27ab-41c7-b140-6ecf19d75d79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Myclass\math">
+      <UniqueIdentifier>{26cde387-11b7-4060-ae02-1dfae89449d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\3d">
+      <UniqueIdentifier>{06267818-6b9b-4a73-b707-f08086c75895}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -89,6 +95,12 @@
     </ClCompile>
     <ClCompile Include="MyClass\math\Matrix4x4Func.cpp">
       <Filter>ソース ファイル\MyClass\math</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\Player\PlayerBullet.cpp">
+      <Filter>ソース ファイル\MyClass\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransformEx.cpp">
+      <Filter>ソース ファイル\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,8 +194,11 @@
     <ClInclude Include="MyClass\Player\Player.h">
       <Filter>ヘッダー ファイル\Myclass\Player</Filter>
     </ClInclude>
+    <ClInclude Include="MyClass\Player\PlayerBullet.h">
+      <Filter>ヘッダー ファイル\Myclass\Player</Filter>
+    </ClInclude>
     <ClInclude Include="MyClass\math\Matrix4x4Func.h">
-      <Filter>ソース ファイル\MyClass\math</Filter>
+      <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
