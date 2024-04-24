@@ -9,12 +9,24 @@
 #include "WorldTransform.h"
 #include <assert.h>
 #include "PlayerBullet.h"
+#include <list>
 
 /// <summary>
 /// 自キャラ
 /// </summary>
 class Player {
 public:
+
+	/// <summary>
+	/// コンストクラタ
+	/// </summary>
+	Player();
+
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~Player();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -45,5 +57,5 @@ private:
 	Model* model_ = nullptr;
 	uint32_t texHandle_ = 0;
 	Input* input_ = nullptr;
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 };

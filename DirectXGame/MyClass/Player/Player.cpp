@@ -13,6 +13,14 @@ const float kCharacterSpeed = 0.2f;
 //回転の速さ[ラジアン/frame]
 const float kRotSpeed = 0.02f;
 
+Player::Player() {}
+
+Player::~Player() { 
+	for (PlayerBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
+
 void Player::Initialize(Model* model, uint32_t texHandle) { 
 	assert(model);
 
@@ -66,8 +74,8 @@ void Player::Update() {
 	worldTransform_.translation_.z = inputFloat3[2];
 
 	Attack();
-	if (bullet_) {
-		bullet_->Update();
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
 	}
 }
 
@@ -82,8 +90,8 @@ void Player::Rotate() {
 void Player::Draw(ViewProjection& viewProjection) { 
 	model_->Draw(worldTransform_, viewProjection, texHandle_);
 
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 
 }
@@ -91,11 +99,11 @@ void Player::Draw(ViewProjection& viewProjection) {
 void Player::Attack() { 
 
 	if (input_->TriggerKey(DIK_SPACE)) {
-	//
-	PlayerBullet* newBullet = new PlayerBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_);
+		//
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
 
-	bullet_ = newBullet;
+		bullets_.push_back(newBullet);
 	}
 
 }
