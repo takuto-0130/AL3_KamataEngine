@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "./MyClass/math/Matrix4x4Func.h"
 #include <imgui.h>
+#include "./MyClass/math/mathFunc.h"
+#include "./MyClass/math/operatorOverload.h"
 
 const float kMoveLimitX = 50;
 const float kMoveLimitY = 50;
@@ -31,6 +33,15 @@ void Player::Initialize(Model* model, uint32_t texHandle) {
 }
 
 void Player::Update() {
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+
 	move = {0, 0, 0};
 
 	//押した方向で移動ベクトルを変更(左右)
@@ -49,11 +60,7 @@ void Player::Update() {
 	}
 
 	//座標移動（ベクトルの加算）
-	worldTransform_.translation_ = {
-	    worldTransform_.translation_.x + move.x,
-	    worldTransform_.translation_.y + move.y,
-	    worldTransform_.translation_.z + move.z,
-	};
+	worldTransform_.translation_ = worldTransform_.translation_ + move;
 
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, kMoveLimitX);
@@ -99,9 +106,14 @@ void Player::Draw(ViewProjection& viewProjection) {
 void Player::Attack() { 
 
 	if (input_->TriggerKey(DIK_SPACE)) {
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 		//
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 		bullets_.push_back(newBullet);
 	}

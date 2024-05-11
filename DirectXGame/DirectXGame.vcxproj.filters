@@ -102,6 +102,9 @@
     <ClCompile Include="3d\WorldTransformEx.cpp">
       <Filter>ソース ファイル\3d</Filter>
     </ClCompile>
+    <ClCompile Include="MyClass\math\mathFunc.cpp">
+      <Filter>ソース ファイル\MyClass\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -198,6 +201,12 @@
       <Filter>ヘッダー ファイル\Myclass\Player</Filter>
     </ClInclude>
     <ClInclude Include="MyClass\math\Matrix4x4Func.h">
+      <Filter>ヘッダー ファイル\Myclass\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\math\operatorOverload.h">
+      <Filter>ソース ファイル\MyClass\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\math\mathFunc.h">
       <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
   </ItemGroup>
