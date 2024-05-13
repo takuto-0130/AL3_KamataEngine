@@ -112,6 +112,12 @@
       <Filter>ソース ファイル\MyClass\math</Filter>
     </ClCompile>
     <ClCompile Include="MyClass\Enemy\Enemy.cpp">
+      <Filter>ソース ファイル\MyClass\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\Enemy\EnemyBullet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\math\operatorOverload.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,14 +218,17 @@
     <ClInclude Include="MyClass\math\Matrix4x4Func.h">
       <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
-    <ClInclude Include="MyClass\math\operatorOverload.h">
-      <Filter>ソース ファイル\MyClass\math</Filter>
-    </ClInclude>
     <ClInclude Include="MyClass\math\mathFunc.h">
       <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
     <ClInclude Include="MyClass\Enemy\Enemy.h">
+      <Filter>ヘッダー ファイル\Myclass\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\Enemy\EnemyBullet.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\math\operatorOverload.h">
+      <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,11 +7,18 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <assert.h>
+#include <./MyClass/Enemy/EnemyBullet.h>
+
+static const int kBulletInterval = 60;
 
 class Enemy {
 public:
 
+	~Enemy();
+
 	void Initialize(Model* model, uint32_t texHandle);
+
+	void ApproachInitialize();
 
 	void Approach();
 
@@ -20,6 +27,8 @@ public:
 	void Update();
 
 	void Draw(ViewProjection& viewProjection);
+
+	void Fire();
 
 private:
 
@@ -32,5 +41,7 @@ private:
 		APPROACH,
 		LEAVE 
 	};
-	int phase_ = APPROACH;
+	int32_t phase_ = APPROACH;
+	std::list<EnemyBullet*> bullets_;
+	int32_t bulletInterval_;
 };

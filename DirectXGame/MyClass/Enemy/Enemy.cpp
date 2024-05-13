@@ -1,22 +1,40 @@
 #include "Enemy.h"
+#include "./MyClass/math/mathFunc.h"
+#include "./MyClass/math/operatorOverload.h"
 
 
 // 敵の移動の速さ
 const float kEnemySpeed = -0.2f;
 
+Enemy::~Enemy() {
+	for (EnemyBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
+
+void Enemy::ApproachInitialize() { bulletInterval_ = kBulletInterval; }
+
 void Enemy::Initialize(Model* model, uint32_t texHandle) {
 	assert(model);
-
+	ApproachInitialize();
 	model_ = model;
 	texHandle_ = texHandle;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, 3, 20};
+	worldTransform_.translation_ = {0, 3, 50};
 	velocity_ = {0, 0, kEnemySpeed};
+	bulletInterval_ = kBulletInterval;
 }
 
 void Enemy::Approach() {
 	velocity_ = {0, 0, kEnemySpeed};
 	worldTransform_.translation_ += velocity_;
+
+	bulletInterval_--;
+	if (bulletInterval_ == 0) {
+		Fire();
+		bulletInterval_ = kBulletInterval;
+	}
+
 	if (worldTransform_.translation_.z < 0.0f) {
 		phase_ = LEAVE;
 	}
@@ -28,6 +46,13 @@ void Enemy::Leave() {
 }
 
 void Enemy::Update() {
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 	switch (phase_) { 
 	case APPROACH:
 	default:
@@ -37,11 +62,28 @@ void Enemy::Update() {
 		Leave();
 		break;
 	}
-
-
 	worldTransform_.UpdateMatrix();
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Update();
+	}
 }
 
 void Enemy::Draw(ViewProjection& viewProjection) { 
-	model_->Draw(worldTransform_, viewProjection, texHandle_);
+	model_->Draw(worldTransform_, viewProjection, texHandle_); 
+	for (EnemyBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
+	}
+}
+
+void Enemy::Fire() {
+	const float kBulletSpeed = -1.0f;
+	Vector3 velocity(0, 0, kBulletSpeed);
+
+	// 速度ベクトルを敵の向きに合わせて回転させる
+	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+	//
+	EnemyBullet* newBullet = new EnemyBullet();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	bullets_.push_back(newBullet);
 }

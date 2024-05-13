@@ -112,8 +112,10 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyClass\Enemy\Enemy.cpp" />
+    <ClCompile Include="MyClass\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="MyClass\math\mathFunc.cpp" />
     <ClCompile Include="MyClass\math\Matrix4x4Func.cpp" />
+    <ClCompile Include="MyClass\math\operatorOverload.cpp" />
     <ClCompile Include="MyClass\Player\Player.cpp" />
     <ClCompile Include="MyClass\Player\PlayerBullet.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -148,6 +150,7 @@
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MyClass\Enemy\Enemy.h" />
+    <ClInclude Include="MyClass\Enemy\EnemyBullet.h" />
     <ClInclude Include="MyClass\math\mathFunc.h" />
     <ClInclude Include="MyClass\math\Matrix4x4Func.h" />
     <ClInclude Include="MyClass\math\operatorOverload.h" />
