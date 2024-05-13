@@ -13,6 +13,10 @@ public:
 
 	void Initialize(Model* model, uint32_t texHandle);
 
+	void Approach();
+
+	void Leave();
+
 	void Update();
 
 	void Draw(ViewProjection& viewProjection);
@@ -24,5 +28,9 @@ private:
 	uint32_t texHandle_ = 0;
 	Vector3 velocity_;
 	bool isDead_ = false;
-
+	enum Phase { 
+		APPROACH,
+		LEAVE 
+	};
+	int phase_ = APPROACH;
 };

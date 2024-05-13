@@ -32,7 +32,7 @@ private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t texHandle_ = 0;
-	Vector3 velocity_;
+	Vector3 velocity_{};
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
 };
