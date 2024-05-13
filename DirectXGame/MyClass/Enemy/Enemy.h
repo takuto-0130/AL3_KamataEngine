@@ -35,7 +35,7 @@ private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t texHandle_ = 0;
-	Vector3 velocity_;
+	Vector3 velocity_{};
 	bool isDead_ = false;
 	enum Phase { 
 		APPROACH,
@@ -43,5 +43,5 @@ private:
 	};
 	int32_t phase_ = APPROACH;
 	std::list<EnemyBullet*> bullets_;
-	int32_t bulletInterval_;
+	int32_t bulletInterval_ = 0;
 };
