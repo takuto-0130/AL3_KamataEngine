@@ -1,10 +1,11 @@
 #include "Enemy.h"
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
+#include "./MyClass/Player/Player.h"
 
 
 // 敵の移動の速さ
-const float kEnemySpeed = -0.2f;
+const float kEnemySpeed = -0.05f;
 
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
@@ -76,14 +77,25 @@ void Enemy::Draw(ViewProjection& viewProjection) {
 }
 
 void Enemy::Fire() {
-	const float kBulletSpeed = -1.0f;
-	Vector3 velocity(0, 0, kBulletSpeed);
+	assert(player_);
+	const float kBulletSpeed = 1.0f;
+	Vector3 playerPos = player_->GetWorldPosition();
+	Vector3 enemyPos = GetWorldPosition();
+	Vector3 enemyToPlayer = playerPos - enemyPos;
+	Vector3 nomalize = Normalize(enemyToPlayer);
+	Vector3 velocity = nomalize * kBulletSpeed;
 
-	// 速度ベクトルを敵の向きに合わせて回転させる
-	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 	//
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 
 	bullets_.push_back(newBullet);
+}
+
+Vector3 Enemy::GetWorldPosition() { 
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }

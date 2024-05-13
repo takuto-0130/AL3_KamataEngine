@@ -21,6 +21,15 @@ Vector3 operator*(const Vector3& a, const Vector3& b) {
 	result.z = a.z * b.z;
 	return result;
 }
+Vector3 operator*(const Vector3& a, const float& b) { 
+	Vector3 result;
+	result.x = a.x * b;
+	result.y = a.y * b;
+	result.z = a.z * b;
+	return result;
+}
+
+
 Vector3 operator/(const Vector3& a, const Vector3& b) {
 	Vector3 result;
 	result.x = a.x / b.x;
