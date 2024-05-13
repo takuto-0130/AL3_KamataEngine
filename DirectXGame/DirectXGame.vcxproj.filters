@@ -73,6 +73,12 @@
     <Filter Include="ソース ファイル\3d">
       <UniqueIdentifier>{06267818-6b9b-4a73-b707-f08086c75895}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\MyClass\Enemy">
+      <UniqueIdentifier>{15db0a75-5b8d-4f16-bd6d-3a1e3e4d1046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Myclass\Enemy">
+      <UniqueIdentifier>{541c704d-460a-4b4a-b7b3-e82642250ff4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -104,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="MyClass\math\mathFunc.cpp">
       <Filter>ソース ファイル\MyClass\math</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\Enemy\Enemy.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="MyClass\math\mathFunc.h">
       <Filter>ヘッダー ファイル\Myclass\math</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\Enemy\Enemy.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
