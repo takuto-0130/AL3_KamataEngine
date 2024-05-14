@@ -1,5 +1,6 @@
 #include "operatorOverload.h"
 
+
 Vector3 operator+(const Vector3& a, const Vector3& b) {
 	Vector3 result;
 	result.x = a.x + b.x;
@@ -7,6 +8,8 @@ Vector3 operator+(const Vector3& a, const Vector3& b) {
 	result.z = a.z + b.z;
 	return result;
 }
+
+
 Vector3 operator-(const Vector3& a, const Vector3& b) {
 	Vector3 result;
 	result.x = a.x - b.x;
@@ -14,6 +17,8 @@ Vector3 operator-(const Vector3& a, const Vector3& b) {
 	result.z = a.z - b.z;
 	return result;
 }
+
+
 Vector3 operator*(const Vector3& a, const Vector3& b) {
 	Vector3 result;
 	result.x = a.x * b.x;
@@ -21,11 +26,19 @@ Vector3 operator*(const Vector3& a, const Vector3& b) {
 	result.z = a.z * b.z;
 	return result;
 }
-Vector3 operator*(const Vector3& a, const float& b) { 
+Vector3 operator*(const Vector3& v, const float& s) { 
 	Vector3 result;
-	result.x = a.x * b;
-	result.y = a.y * b;
-	result.z = a.z * b;
+	result.x = v.x * s;
+	result.y = v.y * s;
+	result.z = v.z * s;
+	return result;
+}
+
+Vector3 operator*(const float& s, const Vector3& v) {
+	Vector3 result;
+	result.x = v.x * s;
+	result.y = v.y * s;
+	result.z = v.z * s;
 	return result;
 }
 
@@ -35,5 +48,12 @@ Vector3 operator/(const Vector3& a, const Vector3& b) {
 	result.x = a.x / b.x;
 	result.y = a.y / b.y;
 	result.z = a.z / b.z;
+	return result;
+}
+Vector3 operator/(const Vector3& v, const float& s) {
+	Vector3 result;
+	result.x = v.x / s;
+	result.y = v.y / s;
+	result.z = v.z / s;
 	return result;
 }

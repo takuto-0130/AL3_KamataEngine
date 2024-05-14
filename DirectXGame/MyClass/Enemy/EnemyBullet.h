@@ -20,6 +20,12 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
+	void OnCollision();
+
+	Vector3 GetWorldPosition();
+
+	const float GetRadius() { return radius_; }
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -27,4 +33,5 @@ private:
 	Vector3 velocity_{};
 	int32_t deathTimer_ = kEnemyBulletLifeTime;
 	bool isDead_ = false;
+	const float radius_ = 1.0f;
 };

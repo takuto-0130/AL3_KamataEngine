@@ -34,7 +34,13 @@ public:
 
 	void Fire();
 
+	void OnCollision();
+
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
 	Vector3 GetWorldPosition();
+
+	const float GetRadius() { return radius_; }
 
 private:
 
@@ -51,4 +57,5 @@ private:
 	std::list<EnemyBullet*> bullets_;
 	int32_t bulletInterval_ = 0;
 	Player* player_ = nullptr;
+	const float radius_ = 1.0f;
 };

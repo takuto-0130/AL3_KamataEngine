@@ -21,7 +21,7 @@ void Enemy::Initialize(Model* model, uint32_t texHandle) {
 	model_ = model;
 	texHandle_ = texHandle;
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = {0, 3, 50};
+	worldTransform_.translation_ = {10, 0, 50};
 	velocity_ = {0, 0, kEnemySpeed};
 	bulletInterval_ = kBulletInterval;
 }
@@ -91,6 +91,8 @@ void Enemy::Fire() {
 
 	bullets_.push_back(newBullet);
 }
+
+void Enemy::OnCollision() {}
 
 Vector3 Enemy::GetWorldPosition() { 
 	Vector3 worldPos;

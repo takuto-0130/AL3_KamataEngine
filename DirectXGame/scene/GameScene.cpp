@@ -2,6 +2,8 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include "./MyClass/math/mathFunc.h"
+#include "./MyClass/math/operatorOverload.h"
 
 GameScene::GameScene() {}
 
@@ -33,6 +35,7 @@ void GameScene::Initialize() {
 void GameScene::Update() { 
 	player_->Update(); 
 	enemy_->Update();
+	CheckAllocollisions();
 	debugCamera_->Update();
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_L)) {
@@ -98,4 +101,46 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllocollisions() {
+	Vector3 posA, posB;
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+#pragma region
+	posA = player_->GetWorldPosition();
+	for (EnemyBullet* bullet : enemyBullets) {
+		posB = bullet->GetWorldPosition();
+		if (Length(posB - posA) <= bullet->GetRadius() + player_->GetRadius()) {
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region
+	posA = enemy_->GetWorldPosition();
+	for (PlayerBullet* bullet : playerBullets) {
+		posB = bullet->GetWorldPosition();
+		if (Length(posB - posA) <= bullet->GetRadius() + enemy_->GetRadius()) {
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region
+	for (EnemyBullet* enemtBullet : enemyBullets) {
+		posA = enemtBullet->GetWorldPosition();
+		for (PlayerBullet* playerBullet : playerBullets) {
+			posB = playerBullet->GetWorldPosition();
+			if (Length(posB - posA) <= enemtBullet->GetRadius() + playerBullet->GetRadius()) {
+				enemtBullet->OnCollision();
+				playerBullet->OnCollision();
+			}
+		}
+	}
+#pragma endregion
+
 }

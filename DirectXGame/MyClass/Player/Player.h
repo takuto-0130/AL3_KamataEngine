@@ -52,7 +52,13 @@ public:
 	/// </summary>
 	void Attack();
 
+	void OnCollision();
+
 	Vector3 GetWorldPosition();
+
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	const float GetRadius() { return radius_; }
 
 private:
 	WorldTransform worldTransform_;
@@ -60,4 +66,5 @@ private:
 	uint32_t texHandle_ = 0;
 	Input* input_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
+	const float radius_ = 1.0f;
 };

@@ -14,4 +14,25 @@ struct Vector3 final {
 		z = a.z + z;
 		return *this;
 	}
+
+	Vector3& operator-=(const Vector3& a) {
+		x = x - a.x;
+		y = y - a.y;
+		z = z - a.z;
+		return *this;
+	}
+
+	Vector3& operator*=(const float& a) {
+		x = x * a;
+		y = y * a;
+		z = z * a;
+		return *this;
+	}
+
+	Vector3& operator/=(const float& a) {
+		x = x / a;
+		y = y / a;
+		z = z / a;
+		return *this;
+	}
 };
