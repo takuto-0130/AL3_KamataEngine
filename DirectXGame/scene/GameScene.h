@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include "MyClass/Player/Player.h"
 #include "MyClass/Enemy/Enemy.h"
+#include "MyClass/Skydome/Skydome.h"
 #include "DebugCamera.h"
 
 /// <summary>
@@ -59,6 +60,9 @@ private: // メンバ変数
 	Enemy* enemy_ = nullptr;
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
+
+	Skydome* skydome_ = nullptr;
+	Model* skydomeModel_ = nullptr;
 
 
 	/// <summary>
