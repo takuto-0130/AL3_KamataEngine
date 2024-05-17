@@ -14,6 +14,7 @@ GameScene::~GameScene() {
 	delete enemy_;
 	delete skydome_;
 	delete skydomeModel_;
+	delete railCamera_;
 }
 
 void GameScene::Initialize() {
@@ -24,11 +25,15 @@ void GameScene::Initialize() {
 	texHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
 	model_ = Model::Create();
 	viewProjection_.Initialize();
+
 	player_ = new Player();
-	player_->Initialize(model_,texHandle_);
+	Vector3 playerPos{0, 0, 40};
+	player_->Initialize(model_, texHandle_, playerPos);
+
 	enemy_ = new Enemy();
 	enemy_->Initialize(model_, texHandle_);
 	enemy_->SetPlayer(player_);
+
 	debugCamera_ = new DebugCamera(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
@@ -36,9 +41,18 @@ void GameScene::Initialize() {
 	skydomeModel_ = Model::CreateFromOBJ("skydome");
 	skydome_ = new Skydome();
 	skydome_->Initialize(skydomeModel_);
+
+	railCamera_ = new RailCamera();
+	railCamera_->Initialize({0, 0, 0}, {0,0,0});
+
+	player_->SetParent(&railCamera_->GetWorldTransform());
 }
 
 void GameScene::Update() { 
+	railCamera_->Update();
+	viewProjection_.matView = railCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
 	player_->Update(); 
 	enemy_->Update();
 	CheckAllocollisions();
@@ -58,7 +72,7 @@ void GameScene::Update() {
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	} else {
-		viewProjection_.UpdateMatrix();
+		//viewProjection_.UpdateMatrix();
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "MyClass/Player/Player.h"
 #include "MyClass/Enemy/Enemy.h"
 #include "MyClass/Skydome/Skydome.h"
+#include "MyClass/RailCamera/RailCamera.h"
 #include "DebugCamera.h"
 
 /// <summary>
@@ -64,6 +65,7 @@ private: // メンバ変数
 	Skydome* skydome_ = nullptr;
 	Model* skydomeModel_ = nullptr;
 
+	RailCamera* railCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用

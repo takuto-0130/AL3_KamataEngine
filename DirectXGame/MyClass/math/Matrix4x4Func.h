@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <Matrix4x4.h>
 #include <cmath>
 #include <Vector3.h>
@@ -33,7 +33,7 @@ Matrix4x4 MakeRotateYMatrix(float radian);
 Matrix4x4 MakeRotateZMatrix(float radian);
 
 //アフィン変換3D
-Matrix4x4 MakeAffineMatrix(Vector3& scale, Vector3& rotate, Vector3& translate);
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 //透視投影行列
 Matrix4x4 MakePrespectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip);

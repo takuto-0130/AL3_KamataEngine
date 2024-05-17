@@ -30,7 +30,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t texHandle);
+	void Initialize(Model* model, uint32_t texHandle, const Vector3& pos);
 
 	/// <summary>
 	/// 更新
@@ -59,6 +59,8 @@ public:
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 	const float GetRadius() { return radius_; }
+
+	void SetParent(const WorldTransform* parent);
 
 private:
 	WorldTransform worldTransform_;

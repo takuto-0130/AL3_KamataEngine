@@ -33,7 +33,6 @@ Vector3 operator*(const Vector3& v, const float& s) {
 	result.z = v.z * s;
 	return result;
 }
-
 Vector3 operator*(const float& s, const Vector3& v) {
 	Vector3 result;
 	result.x = v.x * s;

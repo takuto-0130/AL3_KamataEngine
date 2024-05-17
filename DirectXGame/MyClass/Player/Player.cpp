@@ -4,8 +4,8 @@
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
 
-const float kMoveLimitX = 50;
-const float kMoveLimitY = 50;
+const float kMoveLimitX = 25;
+const float kMoveLimitY = 12;
 
 // キャラの移動ベクトル
 Vector3 move = {0, 0, 0};
@@ -23,12 +23,13 @@ Player::~Player() {
 	}
 }
 
-void Player::Initialize(Model* model, uint32_t texHandle) { 
+void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) { 
 	assert(model);
 
 	model_ = model;
 	texHandle_ = texHandle;
 	worldTransform_.Initialize();
+	worldTransform_.translation_ = pos;
 	input_ = Input::GetInstance();
 }
 
@@ -113,7 +114,7 @@ void Player::Attack() {
 		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 		//
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		bullets_.push_back(newBullet);
 	}
@@ -128,4 +129,8 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
+}
+
+void Player::SetParent(const WorldTransform* parent) { 
+	worldTransform_.parent_ = parent;
 }

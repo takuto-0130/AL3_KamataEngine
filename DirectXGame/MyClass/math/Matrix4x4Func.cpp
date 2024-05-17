@@ -1,4 +1,4 @@
-﻿#include "Matrix4x4Func.h"
+#include "Matrix4x4Func.h"
 
 Matrix4x4 Add(const Matrix4x4& matrix1, const Matrix4x4& matrix2) {
 	Matrix4x4 result;
@@ -169,7 +169,7 @@ Matrix4x4 MakeRotateZMatrix(float radian) {
 	return result;
 }
 
-Matrix4x4 MakeAffineMatrix(Vector3& scale, Vector3& rotate, Vector3& translate) {
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate) {
 	Matrix4x4 result{};
 	Matrix4x4 rotareXMatrix = MakeRotateXMatrix(rotate.x);
 	Matrix4x4 rotareYMatrix = MakeRotateYMatrix(rotate.y);

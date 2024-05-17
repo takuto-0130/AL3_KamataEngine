@@ -118,6 +118,7 @@
     <ClCompile Include="MyClass\math\operatorOverload.cpp" />
     <ClCompile Include="MyClass\Player\Player.cpp" />
     <ClCompile Include="MyClass\Player\PlayerBullet.cpp" />
+    <ClCompile Include="MyClass\RailCamera\RailCamera.cpp" />
     <ClCompile Include="MyClass\Skydome\Skydome.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="MyClass\math\operatorOverload.h" />
     <ClInclude Include="MyClass\Player\Player.h" />
     <ClInclude Include="MyClass\Player\PlayerBullet.h" />
+    <ClInclude Include="MyClass\RailCamera\RailCamera.h" />
     <ClInclude Include="MyClass\Skydome\Skydome.h" />
     <ClInclude Include="scene\GameScene.h" />
   </ItemGroup>
