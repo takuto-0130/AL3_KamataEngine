@@ -10,8 +10,8 @@ void RailCamera::Initialize(const Vector3& worldPos, const Vector3& radian) {
 }
 
 void RailCamera::Update() { 
-	worldTransform_.translation_ += {0, 0, -0.3f};
-	worldTransform_.rotation_ += {0, 0.001f, 0};
+	worldTransform_.translation_ += {0, 0, 0.02f};
+	worldTransform_.rotation_ += {0, -0.0001f, 0};
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	viewProjection_.matView = Inverse(worldTransform_.matWorld_);
 	ImGui::Begin("Camera");

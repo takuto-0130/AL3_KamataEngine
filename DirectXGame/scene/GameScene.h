@@ -12,6 +12,7 @@
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/RailCamera/RailCamera.h"
 #include "DebugCamera.h"
+#include <sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -49,6 +50,26 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllocollisions();
 
+	/// <summary>
+	/// 敵弾を追加
+	/// </summary>
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+	/// <summary>
+	/// 敵のスポーン
+	/// </summary>
+	void PopEnemy(Vector3 position);
+
+	/// <summary>
+	/// 敵のスポーンデータの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵のスポーン更新
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -57,8 +78,14 @@ private: // メンバ変数
 	uint32_t texHandle_ = 0;
 	Model* model_ = nullptr;
 	ViewProjection viewProjection_;
+
 	Player* player_ = nullptr;
-	Enemy* enemy_ = nullptr;
+
+	std::list<Enemy*> enemys_;
+	std::list<EnemyBullet*> enemyBullets_;
+	bool isEnemyPopWait_ = false;
+	int32_t enemyPopTimer_ = 0;
+
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
 
@@ -66,6 +93,8 @@ private: // メンバ変数
 	Model* skydomeModel_ = nullptr;
 
 	RailCamera* railCamera_ = nullptr;
+
+	std::stringstream EnemyPopCommands_;
 
 	/// <summary>
 	/// ゲームシーン用

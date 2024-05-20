@@ -4,6 +4,8 @@
 #include "AxisIndicator.h"
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
+#include <fstream>
+#include <istream>
 
 GameScene::GameScene() {}
 
@@ -11,10 +13,15 @@ GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 	delete debugCamera_;
-	delete enemy_;
+	for (Enemy* enemy : enemys_) {
+		delete enemy;
+	}
 	delete skydome_;
 	delete skydomeModel_;
 	delete railCamera_;
+	for (EnemyBullet* bullet : enemyBullets_) {
+		delete bullet;
+	}
 }
 
 void GameScene::Initialize() {
@@ -30,9 +37,7 @@ void GameScene::Initialize() {
 	Vector3 playerPos{0, 0, 40};
 	player_->Initialize(model_, texHandle_, playerPos);
 
-	enemy_ = new Enemy();
-	enemy_->Initialize(model_, texHandle_);
-	enemy_->SetPlayer(player_);
+	PopEnemy({10,0,50});
 
 	debugCamera_ = new DebugCamera(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -43,9 +48,11 @@ void GameScene::Initialize() {
 	skydome_->Initialize(skydomeModel_);
 
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize({0, 0, 0}, {0,0,0});
+	railCamera_->Initialize({0, 0, -30}, {0, 0.001f, 0});
 
 	player_->SetParent(&railCamera_->GetWorldTransform());
+
+	LoadEnemyPopData();
 }
 
 void GameScene::Update() { 
@@ -53,11 +60,40 @@ void GameScene::Update() {
 	viewProjection_.matView = railCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
+
 	player_->Update(); 
-	enemy_->Update();
+
+	UpdateEnemyPopCommands();
+
+	enemys_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+	for (Enemy* enemy : enemys_) {
+		enemy->Update();
+	}
+
+
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
 	CheckAllocollisions();
+
 	skydome_->Update();
+
 	debugCamera_->Update();
+
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_L)) {
 		if (isDebugCameraActive_ == true) {
@@ -104,8 +140,15 @@ void GameScene::Draw() {
 	/// </summary>
 	skydome_->Draw(viewProjection_);
 
+	for (Enemy* enemy : enemys_) {
+		enemy->Draw(viewProjection_);
+	}
 
-	enemy_->Draw(viewProjection_);
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Draw(viewProjection_);
+	}
+
+
 	player_->Draw(viewProjection_);
 
 
@@ -131,11 +174,10 @@ void GameScene::Draw() {
 void GameScene::CheckAllocollisions() {
 	Vector3 posA, posB;
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 
-#pragma region
+#pragma region 
 	posA = player_->GetWorldPosition();
-	for (EnemyBullet* bullet : enemyBullets) {
+	for (EnemyBullet* bullet : enemyBullets_) {
 		posB = bullet->GetWorldPosition();
 		if (Length(posB - posA) <= bullet->GetRadius() + player_->GetRadius()) {
 			player_->OnCollision();
@@ -144,19 +186,21 @@ void GameScene::CheckAllocollisions() {
 	}
 #pragma endregion
 
-#pragma region
-	posA = enemy_->GetWorldPosition();
-	for (PlayerBullet* bullet : playerBullets) {
-		posB = bullet->GetWorldPosition();
-		if (Length(posB - posA) <= bullet->GetRadius() + enemy_->GetRadius()) {
-			enemy_->OnCollision();
-			bullet->OnCollision();
+#pragma region 
+	for (Enemy* enemy : enemys_) {
+		posA = enemy->GetWorldPosition();
+		for (PlayerBullet* bullet : playerBullets) {
+			posB = bullet->GetWorldPosition();
+			if (Length(posB - posA) <= bullet->GetRadius() + enemy->GetRadius()) {
+				enemy->OnCollision();
+				bullet->OnCollision();
+			}
 		}
 	}
 #pragma endregion
 
-#pragma region
-	for (EnemyBullet* enemtBullet : enemyBullets) {
+#pragma region 
+	for (EnemyBullet* enemtBullet : enemyBullets_) {
 		posA = enemtBullet->GetWorldPosition();
 		for (PlayerBullet* playerBullet : playerBullets) {
 			posB = playerBullet->GetWorldPosition();
@@ -168,4 +212,74 @@ void GameScene::CheckAllocollisions() {
 	}
 #pragma endregion
 
+}
+
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+
+	enemyBullets_.push_back(enemyBullet);
+}
+
+void GameScene::PopEnemy(Vector3 position) {
+
+	Enemy* enemy = new Enemy();
+	enemy->Initialize(model_, texHandle_, position);
+	enemy->SetPlayer(player_);
+	enemy->SetGameScene(this);
+	
+	enemys_.push_back(enemy);
+}
+
+void GameScene::LoadEnemyPopData() { 
+	std::ifstream file;
+	file.open("Resources/EnemyPop.csv");
+	assert(file.is_open());
+
+	EnemyPopCommands_ << file.rdbuf();
+
+	file.close();
+}
+
+void GameScene::UpdateEnemyPopCommands() {
+
+	if (isEnemyPopWait_) {
+		enemyPopTimer_--;
+		if (enemyPopTimer_ <= 0) {
+			isEnemyPopWait_ = false;
+		}
+		return;
+	}
+
+	std::string line;
+
+	while (std::getline(EnemyPopCommands_, line)) {
+		std::istringstream line_stream(line);
+		std::string word;
+		std::getline(line_stream, word, ',');
+		if (word.find("//") == 0) {
+			continue;
+		}
+
+		if (word.find("POP") == 0) {
+			std::getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			std::getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			std::getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			PopEnemy({x, y, z});
+		}
+		else if (word.find("WAIT") == 0) {
+			std::getline(line_stream, word, ',');
+
+			int32_t waitTime = atoi(word.c_str());
+
+			isEnemyPopWait_ = true;
+			enemyPopTimer_ = waitTime;
+
+			break;
+		}
+	}
 }

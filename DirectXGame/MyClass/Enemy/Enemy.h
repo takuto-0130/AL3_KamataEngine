@@ -10,6 +10,7 @@
 #include <./MyClass/Enemy/EnemyBullet.h>
 
 class Player;
+class GameScene;
 
 static const int kBulletInterval = 60;
 
@@ -20,7 +21,7 @@ public:
 
 	void SetPlayer(Player* player) { player_ = player; }
 
-	void Initialize(Model* model, uint32_t texHandle);
+	void Initialize(Model* model, uint32_t texHandle, Vector3 position);
 
 	void ApproachInitialize();
 
@@ -36,13 +37,17 @@ public:
 
 	void OnCollision();
 
-	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
-
 	Vector3 GetWorldPosition();
 
 	const float GetRadius() { return radius_; }
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
+	bool IsDead() const { return isDead_; }
+
 private:
+
+	GameScene* gameScene_ = nullptr;
 
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -54,7 +59,6 @@ private:
 		LEAVE 
 	};
 	int32_t phase_ = APPROACH;
-	std::list<EnemyBullet*> bullets_;
 	int32_t bulletInterval_ = 0;
 	Player* player_ = nullptr;
 	const float radius_ = 1.0f;
