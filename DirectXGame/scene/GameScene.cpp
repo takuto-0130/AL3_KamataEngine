@@ -36,6 +36,7 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	Vector3 playerPos{0, 0, 40};
 	player_->Initialize(model_, texHandle_, playerPos);
+	TextureManager::Load("./Resources/reticle.png");
 
 	PopEnemy({10,0,50});
 
@@ -61,7 +62,7 @@ void GameScene::Update() {
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
 
-	player_->Update(); 
+	player_->Update(viewProjection_); 
 
 	UpdateEnemyPopCommands();
 
@@ -164,6 +165,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->DrawUI();
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

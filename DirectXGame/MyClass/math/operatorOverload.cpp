@@ -56,3 +56,7 @@ Vector3 operator/(const Vector3& v, const float& s) {
 	result.z = v.z / s;
 	return result;
 }
+
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { 
+	return Multiply(m1, m2);
+}

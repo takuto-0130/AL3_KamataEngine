@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
+#include <TextureManager.h>
 
 const float kMoveLimitX = 25;
 const float kMoveLimitY = 12;
@@ -21,6 +22,7 @@ Player::~Player() {
 	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
+	delete sprite2DReticle_;
 }
 
 void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) { 
@@ -31,9 +33,13 @@ void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = pos;
 	input_ = Input::GetInstance();
+	worldTransform3DReticle_.Initialize();
+
+	uint32_t textureReticle = TextureManager::Load("./Resources/reticle.png");
+	sprite2DReticle_ = Sprite::Create(textureReticle, {}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
-void Player::Update() {
+void Player::Update(ViewProjection& viewProjection) {
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -72,6 +78,24 @@ void Player::Update() {
 
 	worldTransform_.UpdateMatrix();
 
+	// 自機のワールド座標から3Dレティクルのワールド座標を計算
+	{ 
+		const float kDistancePlayerTo3DReticle = 50.0f;
+		Vector3 offset{0, 0, 1.0f};
+		offset = TransformNormal(offset, worldTransform_.matWorld_);
+		offset = Normalize(offset) * kDistancePlayerTo3DReticle;
+		worldTransform3DReticle_.translation_ = GetWorldPosition() + offset;
+		worldTransform3DReticle_.UpdateMatrix();
+	}
+	//
+	{ 
+		Vector3 positionReticle = GetWorldPosition3DReticle();
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matViewProjectionViewport = viewProjection.matView * viewProjection.matProjection * matViewport;
+		positionReticle = Transform(positionReticle, matViewProjectionViewport);
+		sprite2DReticle_->SetPosition({positionReticle.x, positionReticle.y});
+	}
+
 	float inputFloat3[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z};
 	
 	ImGui::Begin("player");
@@ -104,14 +128,19 @@ void Player::Draw(ViewProjection& viewProjection) {
 
 }
 
+void Player::DrawUI() { 
+	sprite2DReticle_->Draw();
+}
+
 void Player::Attack() { 
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		const float kBulletSpeed = 1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
+		Vector3 velocity = GetWorldPosition3DReticle() - GetWorldPosition();
+		velocity = Normalize(velocity) * kBulletSpeed;
 
 		//速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
 		//
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, GetWorldPosition(), velocity);
@@ -129,6 +158,14 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
+}
+
+Vector3 Player::GetWorldPosition3DReticle() {
+	Vector3 worldPos3DReticle;
+	worldPos3DReticle.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	worldPos3DReticle.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	worldPos3DReticle.z = worldTransform3DReticle_.matWorld_.m[3][2];
+	return worldPos3DReticle;
 }
 
 void Player::SetParent(const WorldTransform* parent) { 

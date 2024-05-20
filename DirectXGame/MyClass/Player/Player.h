@@ -35,7 +35,7 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 回転
@@ -48,6 +48,11 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
+	/// <summary>
 	/// 攻撃
 	/// </summary>
 	void Attack();
@@ -55,6 +60,8 @@ public:
 	void OnCollision();
 
 	Vector3 GetWorldPosition();
+
+	Vector3 GetWorldPosition3DReticle();
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
@@ -69,4 +76,7 @@ private:
 	Input* input_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
 	const float radius_ = 1.0f;
+
+	WorldTransform worldTransform3DReticle_;
+	Sprite* sprite2DReticle_ = nullptr;
 };
