@@ -12,7 +12,7 @@
 class Player;
 class GameScene;
 
-static const int kBulletInterval = 60;
+static const int kBulletInterval = 90;
 
 class Enemy {
 public:

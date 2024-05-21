@@ -41,5 +41,5 @@ private:
 	Vector3 velocity_{};
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
-	const float radius_ = 1.0f;
+	const float radius_ = 1.5f;
 };

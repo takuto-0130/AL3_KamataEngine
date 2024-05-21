@@ -11,6 +11,8 @@
 #include "PlayerBullet.h"
 #include <list>
 
+const int kPlayerBulletInterval = 20;
+
 /// <summary>
 /// 自キャラ
 /// </summary>
@@ -70,12 +72,19 @@ public:
 	void SetParent(const WorldTransform* parent);
 
 private:
+
+	void SetReticlePosition(ViewProjection& viewProjection);
+
+	void Move();
+
+private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
 	uint32_t texHandle_ = 0;
 	Input* input_ = nullptr;
 	std::list<PlayerBullet*> bullets_;
 	const float radius_ = 1.0f;
+	int32_t bulletInterval_ = 0;
 
 	WorldTransform worldTransform3DReticle_;
 	Sprite* sprite2DReticle_ = nullptr;
