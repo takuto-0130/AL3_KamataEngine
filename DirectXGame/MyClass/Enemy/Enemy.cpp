@@ -6,7 +6,7 @@
 
 
 // 敵の移動の速さ
-const float kEnemySpeed = -0.005f;
+const float kEnemySpeed = -0.2f;
 
 Enemy::~Enemy() {}
 
@@ -21,6 +21,7 @@ void Enemy::Initialize(Model* model, uint32_t texHandle, Vector3 position) {
 	worldTransform_.translation_ = position;
 	velocity_ = {0, 0, kEnemySpeed};
 	bulletInterval_ = kBulletInterval;
+	
 }
 
 void Enemy::Approach() {
@@ -34,7 +35,7 @@ void Enemy::Approach() {
 	}
 
 	if (worldTransform_.translation_.z < 0.0f) {
-		phase_ = LEAVE;
+		phase_ = Phase::LEAVE;
 	}
 }
 
@@ -43,8 +44,13 @@ void Enemy::Leave() {
 	worldTransform_.translation_ += velocity_;
 }
 
+void (Enemy::*Enemy::spFuncTable[])() = {
+	&Enemy::Approach, 
+	&Enemy::Leave
+};
+
 void Enemy::Update() {
-	switch (phase_) { 
+	/*switch (phase_) { 
 	case APPROACH:
 	default:
 		Approach();
@@ -52,7 +58,8 @@ void Enemy::Update() {
 	case LEAVE:
 		Leave();
 		break;
-	}
+	}*/
+	(this->*spFuncTable[static_cast<size_t>(phase_)])();
 	worldTransform_.UpdateMatrix();
 }
 

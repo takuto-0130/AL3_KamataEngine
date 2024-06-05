@@ -54,12 +54,14 @@ private:
 	uint32_t texHandle_ = 0;
 	Vector3 velocity_{};
 	bool isDead_ = false;
-	enum Phase { 
+	enum class Phase { 
 		APPROACH,
 		LEAVE 
 	};
-	int32_t phase_ = APPROACH;
+	Phase phase_ = Phase::APPROACH;
 	int32_t bulletInterval_ = 0;
 	Player* player_ = nullptr;
 	const float radius_ = 1.0f;
+
+	static void (Enemy::*spFuncTable[])();
 };
