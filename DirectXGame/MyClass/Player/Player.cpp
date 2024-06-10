@@ -129,7 +129,7 @@ void Player::Attack() {
 void Player::OnCollision() {}
 
 
-Vector3 Player::GetWorldPosition() { 
+const Vector3 Player::GetWorldPosition() { 
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
@@ -138,7 +138,7 @@ Vector3 Player::GetWorldPosition() {
 }
 
 
-Vector3 Player::GetWorldPosition3DReticle() {
+const Vector3 Player::GetWorldPosition3DReticle() {
 	Vector3 worldPos3DReticle;
 	worldPos3DReticle.x = worldTransform3DReticle_.matWorld_.m[3][0];
 	worldPos3DReticle.y = worldTransform3DReticle_.matWorld_.m[3][1];

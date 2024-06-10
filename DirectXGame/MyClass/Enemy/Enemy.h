@@ -14,6 +14,42 @@ class GameScene;
 
 static const int kBulletInterval = 90;
 
+class Enemy;
+
+class BaseEnemyState {
+public:
+	BaseEnemyState(const std::string& name, Enemy* enemy) : name_(name), enemy_(enemy), bulletInterval_(10){};
+
+	virtual ~BaseEnemyState();
+
+	// 純粋仮想関数 ※派生クラスに実装を強制する
+	virtual void Update() = 0;
+
+	//virtual void DebugLog();
+
+protected:
+	std::string name_;
+	Enemy* enemy_ = nullptr;
+	int32_t bulletInterval_;
+};
+
+class EnemyStateApproach : public BaseEnemyState {
+public:
+	EnemyStateApproach(Enemy* enemy);
+	//~EnemyStateApproach();
+	void Update();/*
+
+private:
+	int32_t bulletInterval_ = 0;*/
+};
+
+class EnemyStateLeave : public BaseEnemyState {
+public:
+	EnemyStateLeave(Enemy* enemy);
+	//~EnemyStateLeave();
+	void Update();
+};
+
 class Enemy {
 public:
 
@@ -37,13 +73,17 @@ public:
 
 	void OnCollision();
 
-	Vector3 GetWorldPosition();
+	const Vector3 GetWorldPosition();
+
+	void MoveTranslate(const Vector3& velocity) { worldTransform_.translation_ += velocity; }
 
 	const float GetRadius() { return radius_; }
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 	bool IsDead() const { return isDead_; }
+
+	void ChangeState(std::unique_ptr<BaseEnemyState> state);
 
 private:
 
@@ -64,4 +104,6 @@ private:
 	const float radius_ = 1.0f;
 
 	static void (Enemy::*spFuncTable[])();
+
+	std::unique_ptr<BaseEnemyState> state_;
 };

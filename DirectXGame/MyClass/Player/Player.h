@@ -61,9 +61,9 @@ public:
 
 	void OnCollision();
 
-	Vector3 GetWorldPosition();
+	const Vector3 GetWorldPosition();
 
-	Vector3 GetWorldPosition3DReticle();
+	const Vector3 GetWorldPosition3DReticle();
 
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
