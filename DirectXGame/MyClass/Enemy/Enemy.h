@@ -8,6 +8,7 @@
 #include "WorldTransform.h"
 #include <assert.h>
 #include <./MyClass/Enemy/EnemyBullet.h>
+#include <./MyClass/math/TimedCall.h>
 
 class Player;
 class GameScene;
@@ -106,4 +107,5 @@ private:
 	static void (Enemy::*spFuncTable[])();
 
 	std::unique_ptr<BaseEnemyState> state_;
+	std::list<TimedCall*> timeCalls_;
 };
