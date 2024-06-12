@@ -8,7 +8,11 @@
 // 敵の移動の速さ
 const float kEnemySpeed = -0.2f;
 
-Enemy::~Enemy() {}
+Enemy::~Enemy() {
+	for (TimedCall* timeCall : timeCalls_) {
+		delete timeCall;
+	}
+}
 
 void Enemy::ApproachInitialize() { bulletInterval_ = kBulletInterval; }
 
@@ -58,6 +62,16 @@ void Enemy::Update() {
 		Fire();
 		bulletInterval_ = kBulletInterval;
 	}*/
+	timeCalls_.remove_if([](TimedCall* timeCall) { 
+		if (timeCall->IsFinished()) {
+			delete timeCall;
+			return true;
+		}
+		return false;
+	});
+	for (TimedCall* timeCall : timeCalls_) {
+		timeCall->Update();
+	}
 	worldTransform_.UpdateMatrix();
 }
 
@@ -100,19 +114,33 @@ const Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
+void Enemy::FireAndReset() {
+	Fire();
+	timeCalls_.push_back(new TimedCall(std::bind(&Enemy::FireAndReset, this), kBulletInterval));
+}
+
+void Enemy::TimerSet() { 
+	timeCalls_.push_back(new TimedCall(std::bind(&Enemy::FireAndReset, this), kBulletInterval));
+}
+
+void Enemy::TimerClear() {
+	timeCalls_.remove_if([](TimedCall* timeCall) {
+		if (true) {
+			delete timeCall;
+			return true;
+		}
+		return false;
+	});
+}
+
 void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) { state_ = std::move(state); }
 
-EnemyStateApproach::EnemyStateApproach(Enemy* enemy) : BaseEnemyState("State Approach", enemy) {}
+EnemyStateApproach::EnemyStateApproach(Enemy* enemy) : BaseEnemyState("State Approach", enemy) { enemy_->TimerSet(); }
 
 void EnemyStateApproach::Update() {
 	enemy_->MoveTranslate({0, 0, kEnemySpeed});
 	if (enemy_->GetWorldPosition().z < 0.0f) {
 		enemy_->ChangeState(std::make_unique<EnemyStateLeave>(enemy_));
-	}
-	bulletInterval_--;
-	if (bulletInterval_ == 0) {
-		enemy_->Fire();
-		bulletInterval_ = kBulletInterval;
 	}
 }
 
@@ -120,6 +148,7 @@ EnemyStateLeave::EnemyStateLeave(Enemy* enemy) : BaseEnemyState("State Leave", e
 
 void EnemyStateLeave::Update() { 
 	enemy_->MoveTranslate({kEnemySpeed, 0, 0});
+	enemy_->TimerClear();
 }
 
 BaseEnemyState::~BaseEnemyState() {}

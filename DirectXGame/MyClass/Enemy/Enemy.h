@@ -21,6 +21,7 @@ class BaseEnemyState {
 public:
 	BaseEnemyState(const std::string& name, Enemy* enemy) : name_(name), enemy_(enemy), bulletInterval_(10){};
 
+	// デストラクタを仮想関数にしないと全部一緒に消えちゃう
 	virtual ~BaseEnemyState();
 
 	// 純粋仮想関数 ※派生クラスに実装を強制する
@@ -75,6 +76,12 @@ public:
 	void OnCollision();
 
 	const Vector3 GetWorldPosition();
+
+	void FireAndReset();
+
+	void TimerSet();
+
+	void TimerClear();
 
 	void MoveTranslate(const Vector3& velocity) { worldTransform_.translation_ += velocity; }
 
