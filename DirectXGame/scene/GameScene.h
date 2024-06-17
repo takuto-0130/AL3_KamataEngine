@@ -12,6 +12,7 @@
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/RailCamera/RailCamera.h"
 #include "MyClass/Collider.h"
+#include "MyClass/Collider/ColliderManager.h"
 #include "DebugCamera.h"
 #include <sstream>
 
@@ -45,11 +46,6 @@ public: // メンバ関数
 	/// 描画
 	/// </summary>
 	void Draw();
-
-	/// <summary>
-	/// 衝突判定と応答
-	/// </summary>
-	void CheckAllocollisions();
 	
 	/// <summary>
 	/// 敵弾を追加
@@ -72,12 +68,10 @@ public: // メンバ関数
 	void UpdateEnemyPopCommands();
 
 private:
-	/// <summary>
-	/// コライダー2つの衝突判定と応答
-	/// </summary>
-	/// <param name="colliderA">コライダーA</param>
-	/// <param name="colliderB">コライダーB</param>
-	void CheckAllocollisionPair(Collider* colliderA, Collider* colliderB);
+
+
+	const std::list<Enemy*>& GetEnemys() const { return enemys_; }
+	const std::list<EnemyBullet*>& GetEnemyBullets() const { return enemyBullets_; }
 
 
 private: // メンバ変数
@@ -103,9 +97,7 @@ private: // メンバ変数
 
 	RailCamera* railCamera_ = nullptr;
 
-	std::stringstream EnemyPopCommands_;
+	ColliderManager* colliderManager_ = nullptr;
 
-	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+	std::stringstream EnemyPopCommands_;
 };

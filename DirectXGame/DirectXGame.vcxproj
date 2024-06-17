@@ -112,6 +112,7 @@
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyClass\Collider.cpp" />
+    <ClCompile Include="MyClass\Collider\ColliderManager.cpp" />
     <ClCompile Include="MyClass\Enemy\Enemy.cpp" />
     <ClCompile Include="MyClass\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="MyClass\math\mathFunc.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MyClass\Collider.h" />
+    <ClInclude Include="MyClass\Collider\ColliderManager.h" />
     <ClInclude Include="MyClass\CollisionConfig.h" />
     <ClInclude Include="MyClass\Enemy\Enemy.h" />
     <ClInclude Include="MyClass\Enemy\EnemyBullet.h" />

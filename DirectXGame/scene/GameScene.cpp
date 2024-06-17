@@ -22,6 +22,7 @@ GameScene::~GameScene() {
 	for (EnemyBullet* bullet : enemyBullets_) {
 		delete bullet;
 	}
+	delete colliderManager_;
 }
 
 void GameScene::Initialize() {
@@ -52,6 +53,8 @@ void GameScene::Initialize() {
 	railCamera_->Initialize({0, 0, -30}, {0, 0.001f, 0});
 
 	player_->SetParent(&railCamera_->GetWorldTransform());
+
+	colliderManager_ = new ColliderManager();
 
 	LoadEnemyPopData();
 }
@@ -89,7 +92,7 @@ void GameScene::Update() {
 		bullet->Update();
 	}
 
-	CheckAllocollisions();
+	colliderManager_->Update(player_, GetEnemys(), GetEnemyBullets());
 
 	skydome_->Update();
 
@@ -173,50 +176,6 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-
-void GameScene::CheckAllocollisions() {
-	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-
-	std::list<Collider*> colliders_;
-
-	colliders_.push_back(player_);
-	for (Enemy* enemy : enemys_) {
-		colliders_.push_back(enemy);
-	}
-	for (EnemyBullet* enemtBullet : enemyBullets_) {
-		colliders_.push_back(enemtBullet);
-	}
-	for (PlayerBullet* playerBullet : playerBullets) {
-		colliders_.push_back(playerBullet);
-	}
-
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-	for (; itrA != colliders_.end(); ++itrA) {
-		Collider* colliderA = *itrA;
-
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-		for (; itrB != colliders_.end(); ++itrB) {
-			Collider* colliderB = *itrB;
-			CheckAllocollisionPair(colliderA, colliderB);
-		}
-	}
-}
-
-void GameScene::CheckAllocollisionPair(Collider* colliderA, Collider* colliderB) { 
-	if ((colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) || 
-		(colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask())) {
-		return;
-	}
-	Vector3 posA, posB; 
-	posA = colliderA->GetWorldPosition();
-	posB = colliderB->GetWorldPosition();
-	if (Length(posB - posA) <= colliderA->GetRadius() + colliderB->GetRadius()) {
-		colliderA->OnCollision();
-		colliderB->OnCollision();
-	}
-
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
