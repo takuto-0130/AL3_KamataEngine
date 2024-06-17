@@ -68,7 +68,7 @@ void Player::Update(ViewProjection& viewProjection) {
 	float inputFloat3[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z};
 	
 	ImGui::Begin("player");
-	ImGui::SliderFloat3("Player", inputFloat3, -100.0f,100.0f);
+	ImGui::SliderFloat3("Player", inputFloat3, -100.0f, 100.0f);
 	ImGui::End();
 	worldTransform_.translation_.x = inputFloat3[0];
 	worldTransform_.translation_.y = inputFloat3[1];
@@ -76,9 +76,9 @@ void Player::Update(ViewProjection& viewProjection) {
 }
 
 void Player::Rotate() { 
-	if (input_->PushKey(DIK_A)) {
+	if (input_->PushKey(DIK_Q)) {
 		worldTransform_.rotation_.y -= kRotSpeed;
-	} else if (input_->PushKey(DIK_D)) {
+	} else if (input_->PushKey(DIK_E)) {
 		worldTransform_.rotation_.y += kRotSpeed;
 	}
 }
@@ -200,6 +200,21 @@ void Player::Move() {
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed;
 		move.y += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed;
+	} else {
+		Vector3 dir{};
+		if (input_->PushKey(DIK_W)) {
+			dir.y += 1.0f;
+		}
+		if (input_->PushKey(DIK_A)) {
+			dir.x -= 1.0f;
+		}
+		if (input_->PushKey(DIK_S)) {
+			dir.y -= 1.0f;
+		}
+		if (input_->PushKey(DIK_D)) {
+			dir.x += 1.0f;
+		}
+		move = dir * kCharacterSpeed;
 	}
 
 	// 座標移動（ベクトルの加算）

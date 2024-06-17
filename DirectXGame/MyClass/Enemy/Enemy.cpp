@@ -28,40 +28,8 @@ void Enemy::Initialize(Model* model, uint32_t texHandle, Vector3 position) {
 	ChangeState(std::make_unique<EnemyStateApproach>(this));
 }
 
-//void Enemy::Approach() {
-//	velocity_ = {0, 0, kEnemySpeed};
-//	worldTransform_.translation_ += velocity_;
-//
-//	bulletInterval_--;
-//	if (bulletInterval_ == 0) {
-//		Fire();
-//		bulletInterval_ = kBulletInterval;
-//	}
-//
-//	if (worldTransform_.translation_.z < 0.0f) {
-//		phase_ = Phase::LEAVE;
-//	}
-//}
-//
-//void Enemy::Leave() {
-//	velocity_ = {kEnemySpeed, 0, 0};
-//	worldTransform_.translation_ += velocity_;
-//}
-
-//void (Enemy::*Enemy::spFuncTable[])() = {
-//	&Enemy::Approach, 
-//	&Enemy::Leave
-//};
-
 void Enemy::Update() {
-	//(this->*spFuncTable[static_cast<size_t>(phase_)])();
 	state_->Update();
-	/*Fire();
-	bulletInterval_--;
-	if (bulletInterval_ == 0) {
-		Fire();
-		bulletInterval_ = kBulletInterval;
-	}*/
 	timeCalls_.remove_if([](TimedCall* timeCall) { 
 		if (timeCall->IsFinished()) {
 			delete timeCall;
@@ -97,7 +65,7 @@ void Enemy::Fire() {
 
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
-
+	newBullet->SetPlayer(player_);
 
 	gameScene_->AddEnemyBullet(newBullet);
 }

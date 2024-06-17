@@ -1,8 +1,8 @@
 #include "EnemyBullet.h"
 #include "TextureManager.h"
 #include "Enemy.h"
-#include <MyClass/math/Matrix4x4Func.h>
 #include <MyClass/math/mathFunc.h>
+#include <MyClass/math/operatorOverload.h>
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
 	assert(model);
@@ -12,17 +12,11 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.translation_ = position;
 	worldTransform_.scale_ = {0.5f, 0.5f, 3.0f};
 	velocity_ = velocity;
-	//
-	worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
-	//Matrix4x4 RotateMatrix = MakeRotateYMatrix(-worldTransform_.rotation_.y);
-	//Vector3 velocityZ = Transform(velocity_, RotateMatrix);
-	////
-	//worldTransform_.rotation_.x = std::atan2(-velocityZ.y, velocityZ.z);
-	float length = Length({velocity_.x, 0, velocity_.z});
-	worldTransform_.rotation_.x = std::atan2(-velocity_.y, length);
+	DirectionSet();
 }
 
 void EnemyBullet::Update() {
+	Homing();
 	worldTransform_.translation_ += velocity_;
 	worldTransform_.UpdateMatrix();
 	if (--deathTimer_ <= 0) {
@@ -37,10 +31,26 @@ void EnemyBullet::OnCollision() {
 	isDead_ = true;
 }
 
-Vector3 EnemyBullet::GetWorldPosition() {
+const Vector3 EnemyBullet::GetWorldPosition() {
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
+}
+
+void EnemyBullet::DirectionSet() {
+	// Y軸周り角度(θy)
+	worldTransform_.rotation_.y = std::atan2(velocity_.x, velocity_.z);
+	float length = Length({velocity_.x, 0, velocity_.z});
+	// X軸周り角度(θx)
+	worldTransform_.rotation_.x = std::atan2(-velocity_.y, length);
+}
+
+void EnemyBullet::Homing() { 
+	Vector3 toPlayer = player_->GetWorldPosition() - GetWorldPosition();
+	toPlayer = Normalize(toPlayer);
+	velocity_ = Normalize(velocity_);
+	velocity_ = Slerp(velocity_, toPlayer, 0.06f) * 1.0f;
+	DirectionSet();
 }
