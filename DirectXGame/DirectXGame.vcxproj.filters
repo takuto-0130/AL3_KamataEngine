@@ -138,6 +138,12 @@
     <ClCompile Include="MyClass\Skydome\Skydome.cpp">
       <Filter>ソース ファイル\MyClass\Skydome</Filter>
     </ClCompile>
+    <ClCompile Include="MyClass\Collider.cpp">
+      <Filter>ソース ファイル\MyClass</Filter>
+    </ClCompile>
+    <ClCompile Include="MyClass\math\TimedCall.cpp">
+      <Filter>ソース ファイル\MyClass\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -253,6 +259,15 @@
     </ClInclude>
     <ClInclude Include="MyClass\Skydome\Skydome.h">
       <Filter>ヘッダー ファイル\Myclass\Skydome</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\CollisionConfig.h">
+      <Filter>ヘッダー ファイル\Myclass</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\Collider.h">
+      <Filter>ヘッダー ファイル\Myclass</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\math\TimedCall.h">
+      <Filter>ヘッダー ファイル\Myclass\math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

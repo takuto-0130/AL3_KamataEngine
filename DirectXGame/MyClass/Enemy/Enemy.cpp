@@ -27,6 +27,8 @@ void Enemy::Initialize(Model* model, uint32_t texHandle, Vector3 position) {
 	bulletInterval_ = kBulletInterval;
 	SetRadius(radius_);
 	ChangeState(std::make_unique<EnemyStateApproach>(this));
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionAttributeEnemy ^ 0x00000000);
 }
 
 void Enemy::Update() {

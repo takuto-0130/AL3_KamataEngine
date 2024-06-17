@@ -154,6 +154,7 @@
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
     <ClInclude Include="MyClass\Collider.h" />
+    <ClInclude Include="MyClass\CollisionConfig.h" />
     <ClInclude Include="MyClass\Enemy\Enemy.h" />
     <ClInclude Include="MyClass\Enemy\EnemyBullet.h" />
     <ClInclude Include="MyClass\math\mathFunc.h" />

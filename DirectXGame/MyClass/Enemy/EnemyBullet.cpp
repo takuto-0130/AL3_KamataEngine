@@ -14,6 +14,8 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	velocity_ = velocity;
 	DirectionSet();
 	SetRadius(radius_);
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	SetCollisionMask(kCollisionAttributeEnemy ^ 0x00000000);
 }
 
 void EnemyBullet::Update() {

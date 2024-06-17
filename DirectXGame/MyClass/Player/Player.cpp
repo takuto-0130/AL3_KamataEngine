@@ -37,6 +37,8 @@ void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) {
 	SetRadius(radius_);
 	uint32_t textureReticle = TextureManager::Load("./Resources/reticle.png");
 	sprite2DReticle_ = Sprite::Create(textureReticle, {640,360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionAttributePlayer ^ 0x00000000);
 }
 
 void Player::Update(ViewProjection& viewProjection) {
@@ -108,6 +110,7 @@ void Player::Attack() {
 	if (bulletInterval_ > 0) {
 		bulletInterval_--;
 	}
+	
 
 	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) && bulletInterval_<=0) {
 		const float kBulletSpeed = 1.0f;
@@ -123,7 +126,6 @@ void Player::Attack() {
 		bullets_.push_back(newBullet);
 		bulletInterval_ = kPlayerBulletInterval;
 	}
-
 }
 
 

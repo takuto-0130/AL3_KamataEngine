@@ -10,6 +10,8 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.translation_ = position;
 	velocity_ = velocity;
 	SetRadius(radius_);
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	SetCollisionMask(kCollisionAttributePlayer ^ 0x00000000);
 }
 
 void PlayerBullet::Update() {
