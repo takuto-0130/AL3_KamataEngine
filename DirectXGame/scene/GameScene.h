@@ -11,6 +11,7 @@
 #include "MyClass/Enemy/Enemy.h"
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/RailCamera/RailCamera.h"
+#include "MyClass/Collider.h"
 #include "DebugCamera.h"
 #include <sstream>
 
@@ -49,7 +50,7 @@ public: // メンバ関数
 	/// 衝突判定と応答
 	/// </summary>
 	void CheckAllocollisions();
-
+	
 	/// <summary>
 	/// 敵弾を追加
 	/// </summary>
@@ -69,6 +70,14 @@ public: // メンバ関数
 	/// 敵のスポーン更新
 	/// </summary>
 	void UpdateEnemyPopCommands();
+
+private:
+	/// <summary>
+	/// コライダー2つの衝突判定と応答
+	/// </summary>
+	/// <param name="colliderA">コライダーA</param>
+	/// <param name="colliderB">コライダーB</param>
+	void CheckAllocollisionPair(Collider* colliderA, Collider* colliderB);
 
 
 private: // メンバ変数

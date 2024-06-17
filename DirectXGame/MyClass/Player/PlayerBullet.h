@@ -7,6 +7,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <assert.h>
+#include "MyClass/Collider.h"
 
 
 // 寿命<frame>
@@ -15,7 +16,7 @@ static const int32_t kLifeTime = 60 * 5;
 /// <summary>
 /// 自キャラの弾
 /// </summary>
-class PlayerBullet {
+class PlayerBullet : public Collider {
 public:
 
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
@@ -28,9 +29,9 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	void OnCollision();
+	void OnCollision() override;
 
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() const override;
 
 	const float GetRadius() { return radius_; }
 

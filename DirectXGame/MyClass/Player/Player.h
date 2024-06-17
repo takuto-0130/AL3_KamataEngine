@@ -9,6 +9,7 @@
 #include "WorldTransform.h"
 #include <assert.h>
 #include "PlayerBullet.h"
+#include "MyClass/Collider.h"
 #include <list>
 
 const int kPlayerBulletInterval = 20;
@@ -16,7 +17,7 @@ const int kPlayerBulletInterval = 20;
 /// <summary>
 /// 自キャラ
 /// </summary>
-class Player {
+class Player : public Collider{
 public:
 
 	/// <summary>
@@ -59,9 +60,9 @@ public:
 	/// </summary>
 	void Attack();
 
-	void OnCollision();
+	void OnCollision() override;
 
-	const Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() const override;
 
 	const Vector3 GetWorldPosition3DReticle();
 

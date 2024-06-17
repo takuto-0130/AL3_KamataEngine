@@ -9,9 +9,11 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	velocity_ = velocity;
+	SetRadius(radius_);
 }
 
 void PlayerBullet::Update() {
+	SetRadius(radius_);
 	worldTransform_.translation_ += velocity_;
 	worldTransform_.UpdateMatrix();
 	if (--deathTimer_ <= 0) {
@@ -29,7 +31,7 @@ void PlayerBullet::OnCollision() {
 	isDead_ = true;
 }
 
-Vector3 PlayerBullet::GetWorldPosition() {
+Vector3 PlayerBullet::GetWorldPosition() const {
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];

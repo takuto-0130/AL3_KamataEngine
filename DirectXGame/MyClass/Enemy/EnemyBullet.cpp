@@ -13,9 +13,11 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.scale_ = {0.5f, 0.5f, 3.0f};
 	velocity_ = velocity;
 	DirectionSet();
+	SetRadius(radius_);
 }
 
 void EnemyBullet::Update() {
+	SetRadius(radius_);
 	Homing();
 	worldTransform_.translation_ += velocity_;
 	worldTransform_.UpdateMatrix();
@@ -31,7 +33,7 @@ void EnemyBullet::OnCollision() {
 	isDead_ = true;
 }
 
-const Vector3 EnemyBullet::GetWorldPosition() {
+Vector3 EnemyBullet::GetWorldPosition() const {
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];

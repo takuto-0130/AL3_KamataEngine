@@ -8,12 +8,13 @@
 #include "WorldTransform.h"
 #include <assert.h>
 #include <MyClass/Player/Player.h>
+#include "MyClass/Collider.h"
 
 static const int32_t kEnemyBulletLifeTime = 60 * 5;
 
 static const float kEnemyBulletSpeed = 4.0f;
 
-class EnemyBullet {
+class EnemyBullet : public Collider {
 public:
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
 
@@ -23,9 +24,9 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
-	void OnCollision();
+	void OnCollision() override;
 
-	const Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() const override;
 
 	void DirectionSet();
 

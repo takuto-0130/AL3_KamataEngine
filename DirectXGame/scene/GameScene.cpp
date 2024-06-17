@@ -176,45 +176,41 @@ void GameScene::Draw() {
 }
 
 void GameScene::CheckAllocollisions() {
-	Vector3 posA, posB;
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 
 #pragma region 
-	posA = player_->GetWorldPosition();
 	for (EnemyBullet* bullet : enemyBullets_) {
-		posB = bullet->GetWorldPosition();
-		if (Length(posB - posA) <= bullet->GetRadius() + player_->GetRadius()) {
-			player_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckAllocollisionPair(player_, bullet);
 	}
 #pragma endregion
 
 #pragma region 
 	for (Enemy* enemy : enemys_) {
-		posA = enemy->GetWorldPosition();
 		for (PlayerBullet* bullet : playerBullets) {
-			posB = bullet->GetWorldPosition();
-			if (Length(posB - posA) <= bullet->GetRadius() + enemy->GetRadius()) {
-				enemy->OnCollision();
-				bullet->OnCollision();
-			}
+			CheckAllocollisionPair(enemy, bullet);
 		}
 	}
 #pragma endregion
 
 #pragma region 
 	for (EnemyBullet* enemtBullet : enemyBullets_) {
-		posA = enemtBullet->GetWorldPosition();
 		for (PlayerBullet* playerBullet : playerBullets) {
-			posB = playerBullet->GetWorldPosition();
-			if (Length(posB - posA) <= enemtBullet->GetRadius() + playerBullet->GetRadius()) {
-				enemtBullet->OnCollision();
-				playerBullet->OnCollision();
-			}
+			CheckAllocollisionPair(enemtBullet, playerBullet);
 		}
 	}
 #pragma endregion
+
+}
+
+void GameScene::CheckAllocollisionPair(Collider* colliderA, Collider* colliderB) { 
+	Vector3 posA, posB; 
+
+	posA = colliderA->GetWorldPosition();
+	posB = colliderB->GetWorldPosition();
+	if (Length(posB - posA) <= colliderA->GetRadius() + colliderB->GetRadius()) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
 
 }
 

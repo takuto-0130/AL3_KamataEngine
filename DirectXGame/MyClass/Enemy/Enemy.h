@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <./MyClass/Enemy/EnemyBullet.h>
 #include <./MyClass/math/TimedCall.h>
+#include "MyClass/Collider.h"
 
 class Player;
 class GameScene;
@@ -52,7 +53,7 @@ public:
 	void Update();
 };
 
-class Enemy {
+class Enemy : public Collider {
 public:
 
 	~Enemy();
@@ -73,9 +74,9 @@ public:
 
 	void Fire();
 
-	void OnCollision();
+	void OnCollision() override;
 
-	const Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() const override;
 
 	void FireAndReset();
 

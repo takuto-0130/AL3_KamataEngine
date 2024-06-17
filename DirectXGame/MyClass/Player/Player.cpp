@@ -34,12 +34,13 @@ void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) {
 	worldTransform_.translation_ = pos;
 	input_ = Input::GetInstance();
 	worldTransform3DReticle_.Initialize();
-
+	SetRadius(radius_);
 	uint32_t textureReticle = TextureManager::Load("./Resources/reticle.png");
 	sprite2DReticle_ = Sprite::Create(textureReticle, {640,360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
 }
 
 void Player::Update(ViewProjection& viewProjection) {
+	SetRadius(radius_);
 	//デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
 		if (bullet->IsDead()) {
@@ -129,7 +130,7 @@ void Player::Attack() {
 void Player::OnCollision() {}
 
 
-const Vector3 Player::GetWorldPosition() { 
+Vector3 Player::GetWorldPosition() const{ 
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];

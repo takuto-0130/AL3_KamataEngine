@@ -25,10 +25,12 @@ void Enemy::Initialize(Model* model, uint32_t texHandle, Vector3 position) {
 	worldTransform_.translation_ = position;
 	velocity_ = {0, 0, kEnemySpeed};
 	bulletInterval_ = kBulletInterval;
+	SetRadius(radius_);
 	ChangeState(std::make_unique<EnemyStateApproach>(this));
 }
 
 void Enemy::Update() {
+	SetRadius(radius_);
 	state_->Update();
 	timeCalls_.remove_if([](TimedCall* timeCall) { 
 		if (timeCall->IsFinished()) {
@@ -74,7 +76,7 @@ void Enemy::OnCollision() {
 	isDead_ = true;
 }
 
-const Vector3 Enemy::GetWorldPosition() { 
+Vector3 Enemy::GetWorldPosition() const { 
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
