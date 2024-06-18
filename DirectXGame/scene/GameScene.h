@@ -104,4 +104,7 @@ private: // メンバ変数
 	std::vector<Vector3> controlPoints_;
 	std::vector<Vector3> pointsDrawing_;
 	const size_t segmentCount = 100;
+	const float cameraSegmentCount = 1.0f / 600.0f;
+	float cameraEyeT = 0;
+	float cameraForwardT = 30.0f / 600.0f;
 };

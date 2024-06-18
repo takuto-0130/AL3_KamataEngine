@@ -21,6 +21,8 @@ public:
 	
 	void Rotate(const Vector3& rotate);
 
+	void Translate(const Vector3& translate);
+
 	/// <summary>
 	/// ビュー行列取得
 	/// </summary>

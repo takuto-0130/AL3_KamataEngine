@@ -36,7 +36,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	player_ = new Player();
-	Vector3 playerPos{0, 0, 45};
+	Vector3 playerPos{0, 0, 30};
 	player_->Initialize(model_, texHandle_, playerPos);
 	TextureManager::Load("./Resources/reticle.png");
 
@@ -51,7 +51,7 @@ void GameScene::Initialize() {
 	skydome_->Initialize(skydomeModel_);
 
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize({0, 0, -45}, {0, 0, 0});
+	railCamera_->Initialize({0, 0, -30}, {0, 0, 0});
 
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
@@ -61,11 +61,11 @@ void GameScene::Initialize() {
 
 	controlPoints_ = {
 	    {0,  0,  0},
-        {10, 10, 0},
-        {10, 15, 0},
-        {20, 15, 0},
-        {20, 0,  0},
-        {30, 0,  0}
+        {10, 10, 10},
+        {10, 15, 20},
+        {20, 15, 30},
+        {20, 0,  35},
+        {30, 0,  40}
     };
 
 	for (size_t i = 0; i < segmentCount + 1; i++) {
@@ -78,6 +78,25 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
+	if (cameraEyeT < 1.0f) {
+		cameraEyeT += cameraSegmentCount;
+		cameraForwardT += cameraSegmentCount;
+		Vector3 eye = CatmullRomPosition(controlPoints_, cameraEyeT);
+		eye.y += 1.0f;
+		railCamera_->Translate(eye);
+		Vector3 forward = CatmullRomPosition(controlPoints_, cameraForwardT);
+		forward.y += 1.0f;
+		forward = forward - eye;
+		if (cameraForwardT <= 1.0f) {
+			Vector3 rotateCametra{};
+			// Y軸周り角度(θy)
+			rotateCametra.y = std::atan2(forward.x, forward.z);
+			float length = Length({forward.x, 0, forward.z});
+			// X軸周り角度(θx)
+			rotateCametra.x = std::atan2(-forward.y, length);
+			railCamera_->Rotate(rotateCametra);
+		}
+	}
 	railCamera_->Update();
 	viewProjection_.matView = railCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
