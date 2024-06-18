@@ -78,25 +78,25 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
-	if (cameraEyeT < 1.0f) {
-		cameraEyeT += cameraSegmentCount;
-		cameraForwardT += cameraSegmentCount;
-		Vector3 eye = CatmullRomPosition(controlPoints_, cameraEyeT);
-		eye.y += 1.0f;
-		railCamera_->Translate(eye);
-		Vector3 forward = CatmullRomPosition(controlPoints_, cameraForwardT);
-		forward.y += 1.0f;
-		forward = forward - eye;
-		if (cameraForwardT <= 1.0f) {
-			Vector3 rotateCametra{};
-			// Y軸周り角度(θy)
-			rotateCametra.y = std::atan2(forward.x, forward.z);
-			float length = Length({forward.x, 0, forward.z});
-			// X軸周り角度(θx)
-			rotateCametra.x = std::atan2(-forward.y, length);
-			railCamera_->Rotate(rotateCametra);
-		}
-	}
+	//if (cameraEyeT < 1.0f) {
+	//	cameraEyeT += cameraSegmentCount;
+	//	cameraForwardT += cameraSegmentCount;
+	//	Vector3 eye = CatmullRomPosition(controlPoints_, cameraEyeT);
+	//	eye.y += 1.0f;
+	//	railCamera_->Translate(eye);
+	//	Vector3 forward = CatmullRomPosition(controlPoints_, cameraForwardT);
+	//	forward.y += 1.0f;
+	//	forward = forward - eye;
+	//	if (cameraForwardT <= 1.0f) {
+	//		Vector3 rotateCametra{};
+	//		// Y軸周り角度(θy)
+	//		rotateCametra.y = std::atan2(forward.x, forward.z);
+	//		float length = Length({forward.x, 0, forward.z});
+	//		// X軸周り角度(θx)
+	//		rotateCametra.x = std::atan2(-forward.y, length);
+	//		railCamera_->Rotate(rotateCametra);
+	//	}
+	//}
 	railCamera_->Update();
 	viewProjection_.matView = railCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
@@ -116,7 +116,7 @@ void GameScene::Update() {
 	for (Enemy* enemy : enemys_) {
 		enemy->Update();
 	}
-
+	player_->SetEnemy(enemys_);
 
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {

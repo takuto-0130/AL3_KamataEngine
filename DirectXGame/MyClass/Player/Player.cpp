@@ -4,6 +4,7 @@
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
 #include <TextureManager.h>
+#include "MyClass/Enemy/Enemy.h"
 
 const float kMoveLimitX = 25;
 const float kMoveLimitY = 12;
@@ -61,7 +62,7 @@ void Player::Update(ViewProjection& viewProjection) {
 	worldTransform_.UpdateMatrix();
 
 	// レティクルの設定
-	SetReticlePosition(viewProjection);
+	SingleLockOn(viewProjection);
 
 	Attack();
 	for (PlayerBullet* bullet : bullets_) {
@@ -110,18 +111,33 @@ void Player::Attack() {
 	
 
 	if ((joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) && bulletInterval_<=0) {
-		const float kBulletSpeed = 1.0f;
-		Vector3 velocity = GetWorldPosition3DReticle() - GetWorldPosition();
-		velocity = Normalize(velocity) * kBulletSpeed;
+		if (isLockOn_ == false) {
+			const float kBulletSpeed = 1.0f;
+			Vector3 velocity = GetWorldPosition3DReticle() - GetWorldPosition();
+			velocity = Normalize(velocity) * kBulletSpeed;
 
-		//速度ベクトルを自機の向きに合わせて回転させる
-		//velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-		//
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+			// 速度ベクトルを自機の向きに合わせて回転させる
+			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+			//
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
-		bullets_.push_back(newBullet);
-		bulletInterval_ = kPlayerBulletInterval;
+			bullets_.push_back(newBullet);
+			bulletInterval_ = kPlayerBulletInterval;
+		} else {
+			const float kBulletSpeed = 2.0f;
+			Vector3 velocity = LockOnPos_ - GetWorldPosition();
+			velocity = Normalize(velocity) * kBulletSpeed;
+
+			// 速度ベクトルを自機の向きに合わせて回転させる
+			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+			//
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+			bullets_.push_back(newBullet);
+			bulletInterval_ = kPlayerBulletInterval;
+		}
 	}
 }
 
@@ -148,7 +164,25 @@ const Vector3 Player::GetWorldPosition3DReticle() {
 
 
 void Player::SetParent(const WorldTransform* parent) { 
-	worldTransform_.parent_ = parent;
+	worldTransform_.parent_ = parent; 
+}
+
+void Player::SingleLockOn(ViewProjection& viewProjection) {
+	isLockOn_ = false;
+	for (Enemy* enemy : enemys_) {
+		Vector3 pos = enemy->GetWorldPosition();
+		Vector2 spritePosition = sprite2DReticle_->GetPosition();
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matVPV = viewProjection.matView * viewProjection.matProjection * matViewport;
+		LockOnPos_ = pos;
+		pos = Transform(pos, matVPV);
+		if (Length(Vector2{pos.x, pos.y} - spritePosition) <= 20) {
+			sprite2DReticle_->SetPosition(Vector2{pos.x, pos.y});
+			isLockOn_ = true;
+			break;
+		}
+	}
+	SetReticlePosition(viewProjection);
 }
 
 
@@ -161,12 +195,6 @@ void Player::SetReticlePosition(ViewProjection& viewProjection) {
 		spritePosition.y -= float(joyState.Gamepad.sThumbRY) / SHRT_MAX * 5.0f;
 		sprite2DReticle_->SetPosition(spritePosition);
 	}
-
-	/*POINT mousePosition;
-	GetCursorPos(&mousePosition);
-	HWND hwnd = WinApp::GetInstance()->GetHwnd();
-	ScreenToClient(hwnd, &mousePosition);
-	sprite2DReticle_->SetPosition({float(mousePosition.x), float(mousePosition.y)});*/
 
 	// 3DReticle
 	Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
@@ -186,6 +214,13 @@ void Player::SetReticlePosition(ViewProjection& viewProjection) {
 	worldTransform3DReticle_.translation_ = posNear + (reticleDirection * kDistanceTestObject);
 	worldTransform3DReticle_.UpdateMatrix();
 
+	//SingleLockOn(viewProjection);
+	if (isLockOn_ == false) {
+		sprite2DReticle_->SetColor({1, 1, 1, 1});
+	} else {
+		sprite2DReticle_->SetColor({1, 0, 0, 1});
+	}
+	ReticleLimit();
 	ImGui::Begin("player");
 	ImGui::Text("2DReticle:(%f,%f)", sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y);
 	ImGui::Text("Near:(%+.2f,%+.2f,%+.2f)", posNear.x, posNear.y, posNear.z);
@@ -224,4 +259,13 @@ void Player::Move() {
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, kMoveLimitY);
+}
+
+void Player::ReticleLimit() {
+	Vector2 spritePosition = sprite2DReticle_->GetPosition();
+	spritePosition.x = max(spritePosition.x, 0);
+	spritePosition.x = min(spritePosition.x, WinApp::kWindowWidth);
+	spritePosition.y = max(spritePosition.y, 0);
+	spritePosition.y = min(spritePosition.y, WinApp::kWindowHeight);
+	sprite2DReticle_->SetPosition(spritePosition);
 }

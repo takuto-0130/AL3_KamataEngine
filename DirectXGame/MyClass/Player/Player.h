@@ -14,6 +14,8 @@
 
 const int kPlayerBulletInterval = 20;
 
+class Enemy;
+
 /// <summary>
 /// 自キャラ
 /// </summary>
@@ -72,11 +74,17 @@ public:
 
 	void SetParent(const WorldTransform* parent);
 
+	void SetEnemy(const std::list<Enemy*> enemys) { enemys_ = enemys; }
+
+	void SingleLockOn(ViewProjection& viewProjection);
+
 private:
 
 	void SetReticlePosition(ViewProjection& viewProjection);
 
 	void Move();
+
+	void ReticleLimit();
 
 private:
 	WorldTransform worldTransform_;
@@ -89,4 +97,9 @@ private:
 
 	WorldTransform worldTransform3DReticle_;
 	Sprite* sprite2DReticle_ = nullptr;
+
+	std::list<Enemy*> enemys_;
+
+	bool isLockOn_ = false;
+	Vector3 LockOnPos_{};
 };

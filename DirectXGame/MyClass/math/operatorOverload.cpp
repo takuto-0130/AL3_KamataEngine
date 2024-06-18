@@ -66,5 +66,11 @@ Vector3 operator/(const Vector3& v, const float& s) {
 }
 
 Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { 
-	return Multiply(m1, m2);
+	return Multiply(m1, m2); }
+
+Vector2 operator-(const Vector2& a, const Vector2& b) {
+	Vector2 result;
+	result.x = a.x - b.x;
+	result.y = a.y - b.y;
+	return result;
 }

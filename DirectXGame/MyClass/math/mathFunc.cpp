@@ -13,7 +13,10 @@ Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m) {
 }
 
 float Length(const Vector3& v) { 
-	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z); }
+
+float Length(const Vector2& v) { 
+	return sqrtf(v.x * v.x + v.y * v.y); 
 }
 
 Vector3 Normalize(const Vector3& v) {
