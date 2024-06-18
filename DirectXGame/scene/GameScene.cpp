@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include "PrimitiveDrawer.h"
 #include "./MyClass/math/mathFunc.h"
 #include "./MyClass/math/operatorOverload.h"
 #include <fstream>
@@ -35,7 +36,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	player_ = new Player();
-	Vector3 playerPos{0, 0, 40};
+	Vector3 playerPos{0, 0, 45};
 	player_->Initialize(model_, texHandle_, playerPos);
 	TextureManager::Load("./Resources/reticle.png");
 
@@ -50,13 +51,30 @@ void GameScene::Initialize() {
 	skydome_->Initialize(skydomeModel_);
 
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize({0, 0, -30}, {0, 0.001f, 0});
+	railCamera_->Initialize({0, 0, -45}, {0, 0, 0});
 
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
 	colliderManager_ = new ColliderManager();
 
 	LoadEnemyPopData();
+
+	controlPoints_ = {
+	    {0,  0,  0},
+        {10, 10, 0},
+        {10, 15, 0},
+        {20, 15, 0},
+        {20, 0,  0},
+        {30, 0,  0}
+    };
+
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		float t = 1.0f / segmentCount * i;
+		Vector3 pos = CatmullRomPosition(controlPoints_, t);
+		pointsDrawing_.push_back(pos);
+	}
+	PrimitiveDrawer::GetInstance()->Initialize();
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() { 
@@ -154,6 +172,11 @@ void GameScene::Draw() {
 
 
 	player_->Draw(viewProjection_);
+
+
+	for (size_t i = 0; i < segmentCount; i++) {
+		PrimitiveDrawer::GetInstance()->DrawLine3d(pointsDrawing_[i], pointsDrawing_[i + 1], {1.0f, 0.0f, 0.0f, 1.0f});
+	}
 
 
 

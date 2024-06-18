@@ -68,14 +68,11 @@ void Player::Update(ViewProjection& viewProjection) {
 		bullet->Update();
 	}
 
-	float inputFloat3[3] = {worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z};
+	float inputFloat3[3] = {GetWorldPosition().x};
 	
 	ImGui::Begin("player");
-	ImGui::SliderFloat3("Player", inputFloat3, -100.0f, 100.0f);
+	ImGui::InputFloat3("Player", inputFloat3);
 	ImGui::End();
-	worldTransform_.translation_.x = inputFloat3[0];
-	worldTransform_.translation_.y = inputFloat3[1];
-	worldTransform_.translation_.z = inputFloat3[2];
 }
 
 void Player::Rotate() { 

@@ -100,4 +100,8 @@ private: // メンバ変数
 	ColliderManager* colliderManager_ = nullptr;
 
 	std::stringstream EnemyPopCommands_;
+
+	std::vector<Vector3> controlPoints_;
+	std::vector<Vector3> pointsDrawing_;
+	const size_t segmentCount = 100;
 };
