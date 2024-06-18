@@ -8,6 +8,8 @@
 #include <fstream>
 #include <istream>
 
+const Vector3 TPSRailCameraPos{0, 0, -30};
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() { 
@@ -51,7 +53,7 @@ void GameScene::Initialize() {
 	skydome_->Initialize(skydomeModel_);
 
 	railCamera_ = new RailCamera();
-	railCamera_->Initialize({0, 0, -30}, {0, 0, 0});
+	railCamera_->Initialize(TPSRailCameraPos, {0, 0, 0});
 
 	player_->SetParent(&railCamera_->GetWorldTransform());
 
@@ -97,6 +99,11 @@ void GameScene::Update() {
 	//		railCamera_->Rotate(rotateCametra);
 	//	}
 	//}
+	changeFPSTPS();
+	if (isFPS_) {
+		railCamera_->Translate(player_->GetWorldPosition());
+		railCamera_->Rotate(player_->GetRotate());
+	}
 	railCamera_->Update();
 	viewProjection_.matView = railCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
@@ -286,6 +293,21 @@ void GameScene::UpdateEnemyPopCommands() {
 			enemyPopTimer_ = waitTime;
 
 			break;
+		}
+	}
+}
+
+void GameScene::changeFPSTPS() {
+	if (input_->TriggerKey(DIK_F)) {
+		if (isFPS_ == true) {
+			isFPS_ = false;
+			railCamera_->SetParent(nullptr);
+			player_->SetParent(&railCamera_->GetWorldTransform());
+			railCamera_->Translate(TPSRailCameraPos);
+		} else {
+			isFPS_ = true;
+			player_->SetParent(nullptr);
+			railCamera_->SetParent(&player_->GetWorldTransform());
 		}
 	}
 }

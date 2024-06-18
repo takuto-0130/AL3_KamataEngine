@@ -74,6 +74,9 @@ private:
 	const std::list<EnemyBullet*>& GetEnemyBullets() const { return enemyBullets_; }
 
 
+	void changeFPSTPS();
+
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -107,4 +110,6 @@ private: // メンバ変数
 	const float cameraSegmentCount = 1.0f / 600.0f;
 	float cameraEyeT = 0;
 	float cameraForwardT = 30.0f / 600.0f;
+
+	bool isFPS_ = false;
 };

@@ -22,3 +22,5 @@ void RailCamera::Update() {
 void RailCamera::Rotate(const Vector3& rotate) { worldTransform_.rotation_ = rotate; }
 
 void RailCamera::Translate(const Vector3& translate) { worldTransform_.translation_ = translate; }
+
+void RailCamera::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }

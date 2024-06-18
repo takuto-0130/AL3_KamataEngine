@@ -30,6 +30,8 @@ public:
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	void SetParent(const WorldTransform* parent);
+
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;

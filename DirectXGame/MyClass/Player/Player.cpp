@@ -68,7 +68,7 @@ void Player::Update(ViewProjection& viewProjection) {
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
 	}
-
+	viewProjection_.matView = Inverse(worldTransform_.matWorld_);
 	float inputFloat3[3] = {GetWorldPosition().x};
 	
 	ImGui::Begin("player");

@@ -72,11 +72,17 @@ public:
 
 	const float GetRadius() { return radius_; }
 
+	const Vector3 GetRotate() { return worldTransform_.rotation_; }
+
 	void SetParent(const WorldTransform* parent);
 
 	void SetEnemy(const std::list<Enemy*> enemys) { enemys_ = enemys; }
 
 	void SingleLockOn(ViewProjection& viewProjection);
+
+	ViewProjection& GetViewProjection() { return viewProjection_; }
+
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 private:
 
@@ -102,4 +108,5 @@ private:
 
 	bool isLockOn_ = false;
 	Vector3 LockOnPos_{};
+	ViewProjection viewProjection_;
 };
