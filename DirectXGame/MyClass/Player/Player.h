@@ -55,7 +55,7 @@ public:
 	/// <summary>
 	/// UI描画
 	/// </summary>
-	void DrawUI();
+	void DrawUI(ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 攻撃
@@ -80,6 +80,10 @@ public:
 
 	void SingleLockOn(ViewProjection& viewProjection);
 
+	void MultiLockOn(ViewProjection& viewProjection);
+
+	void LockOnDeadRemove();
+
 	ViewProjection& GetViewProjection() { return viewProjection_; }
 
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
@@ -103,10 +107,15 @@ private:
 
 	WorldTransform worldTransform3DReticle_;
 	Sprite* sprite2DReticle_ = nullptr;
+	std::list<Sprite*> lockOnSprite2DReticle_;
+	uint32_t textureReticle;
 
 	std::list<Enemy*> enemys_;
 
 	bool isLockOn_ = false;
 	Vector3 LockOnPos_{};
 	ViewProjection viewProjection_;
+
+	const float reticleRadius_ = 35.0f;
+	std::list<Enemy*> lockOnEnemys_;
 };

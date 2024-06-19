@@ -218,7 +218,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	player_->DrawUI();
+	player_->DrawUI(viewProjection_);
 
 
 	// スプライト描画後処理

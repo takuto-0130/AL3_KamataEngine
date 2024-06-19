@@ -24,6 +24,10 @@ Player::~Player() {
 		delete bullet;
 	}
 	delete sprite2DReticle_;
+	for (Sprite* sprite : lockOnSprite2DReticle_) {
+		delete sprite;
+	}
+	
 }
 
 void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) { 
@@ -36,8 +40,9 @@ void Player::Initialize(Model* model, uint32_t texHandle, const Vector3& pos) {
 	input_ = Input::GetInstance();
 	worldTransform3DReticle_.Initialize();
 	SetRadius(radius_);
-	uint32_t textureReticle = TextureManager::Load("./Resources/reticle.png");
+	textureReticle = TextureManager::Load("./Resources/reticle.png");
 	sprite2DReticle_ = Sprite::Create(textureReticle, {640,360}, {1.0f, 1.0f, 1.0f, 1.0f}, {0.5f, 0.5f});
+	
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionAttributePlayer ^ 0x00000000);
 }
@@ -62,8 +67,9 @@ void Player::Update(ViewProjection& viewProjection) {
 	worldTransform_.UpdateMatrix();
 
 	// レティクルの設定
-	SingleLockOn(viewProjection);
+	SetReticlePosition(viewProjection);
 
+	//LockOnDeadRemove();
 	Attack();
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();
@@ -95,8 +101,19 @@ void Player::Draw(ViewProjection& viewProjection) {
 
 }
 
-void Player::DrawUI() { 
+void Player::DrawUI(ViewProjection& viewProjection) {
 	sprite2DReticle_->Draw();
+	for (Enemy* enemy : lockOnEnemys_) {
+		if (enemy->IsDead() == false) {
+			Vector3 pos = enemy->GetWorldPosition();
+			Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+			Matrix4x4 matVPV = viewProjection.matView * viewProjection.matProjection * matViewport;
+			pos = Transform(pos, matVPV);
+			Sprite* reticle = Sprite::Create(textureReticle, {pos.x, pos.y}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.5f, 0.5f});
+			reticle->Draw();
+			//lockOnSprite2DReticle_.push_back(reticle);
+		}
+	}
 }
 
 void Player::Attack() { 
@@ -125,17 +142,30 @@ void Player::Attack() {
 			bullets_.push_back(newBullet);
 			bulletInterval_ = kPlayerBulletInterval;
 		} else {
-			const float kBulletSpeed = 2.0f;
-			Vector3 velocity = LockOnPos_ - GetWorldPosition();
-			velocity = Normalize(velocity) * kBulletSpeed;
+			//const float kBulletSpeed = 2.0f;
+			//Vector3 velocity = LockOnPos_ - GetWorldPosition();
+			//velocity = Normalize(velocity) * kBulletSpeed;
 
-			// 速度ベクトルを自機の向きに合わせて回転させる
-			// velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-			//
-			PlayerBullet* newBullet = new PlayerBullet();
-			newBullet->Initialize(model_, GetWorldPosition(), velocity);
+			//PlayerBullet* newBullet = new PlayerBullet();
+			//newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
-			bullets_.push_back(newBullet);
+			//bullets_.push_back(newBullet);
+			//bulletInterval_ = kPlayerBulletInterval;
+
+			for (Enemy* lockEnemy : lockOnEnemys_) {
+				if (lockEnemy->IsDead() == false)
+				{
+					const float kBulletSpeed = 2.0f;
+					Vector3 velocity = lockEnemy->GetWorldPosition() - GetWorldPosition();
+					velocity = Normalize(velocity) * kBulletSpeed;
+
+					PlayerBullet* newBullet = new PlayerBullet();
+					newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+					bullets_.push_back(newBullet);
+				}
+			}
+			lockOnEnemys_.clear();
 			bulletInterval_ = kPlayerBulletInterval;
 		}
 	}
@@ -182,11 +212,51 @@ void Player::SingleLockOn(ViewProjection& viewProjection) {
 			break;
 		}
 	}
-	SetReticlePosition(viewProjection);
+}
+
+void Player::MultiLockOn(ViewProjection& viewProjection) {
+	sprite2DReticle_->SetColor({1, 1, 1, 1});
+	if (lockOnEnemys_.size() == 0) {
+		isLockOn_ = false;
+	}
+	for (Enemy* enemy : enemys_) {
+		Vector3 pos = enemy->GetWorldPosition();
+		Vector2 spritePosition = sprite2DReticle_->GetPosition();
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+		Matrix4x4 matVPV = viewProjection.matView * viewProjection.matProjection * matViewport;
+		pos = Transform(pos, matVPV);
+		if (Length(Vector2{pos.x, pos.y} - spritePosition) <= reticleRadius_) {
+			sprite2DReticle_->SetColor({1, 0, 0, 1});
+			bool isAdd = true;
+			for (Enemy* lockEnemy : lockOnEnemys_) {
+				if (lockEnemy == enemy) {
+					isAdd = false;
+					break;
+				}
+			}
+			if (isAdd) {
+				isLockOn_ = true;
+				lockOnEnemys_.push_back(enemy);
+			}
+			break;
+		}
+	}
+}
+
+void Player::LockOnDeadRemove() {
+	lockOnEnemys_.remove_if([](Enemy* enemy) {
+		if (enemy == nullptr) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
 }
 
 
 void Player::SetReticlePosition(ViewProjection& viewProjection) {
+	// SingleLockOn(viewProjection);
+	MultiLockOn(viewProjection);
 	// 2DReticle
 	Vector2 spritePosition = sprite2DReticle_->GetPosition();
 	XINPUT_STATE joyState;
@@ -214,12 +284,11 @@ void Player::SetReticlePosition(ViewProjection& viewProjection) {
 	worldTransform3DReticle_.translation_ = posNear + (reticleDirection * kDistanceTestObject);
 	worldTransform3DReticle_.UpdateMatrix();
 
-	//SingleLockOn(viewProjection);
-	if (isLockOn_ == false) {
+	/*if (isLockOn_ == false) {
 		sprite2DReticle_->SetColor({1, 1, 1, 1});
 	} else {
 		sprite2DReticle_->SetColor({1, 0, 0, 1});
-	}
+	}*/
 	ReticleLimit();
 	ImGui::Begin("player");
 	ImGui::Text("2DReticle:(%f,%f)", sprite2DReticle_->GetPosition().x, sprite2DReticle_->GetPosition().y);
