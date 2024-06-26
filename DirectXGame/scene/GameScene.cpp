@@ -3,6 +3,7 @@
 #include <cassert>
 #include "AxisIndicator.h"
 
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -22,6 +23,10 @@ void GameScene::Initialize() {
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+
+	skydomeModel_.reset(Model::CreateFromOBJ("skydome"));
+	skydome_ = std::make_unique <Skydome>();
+	skydome_->Initialize(skydomeModel_.get());
 }
 
 void GameScene::Update() { 

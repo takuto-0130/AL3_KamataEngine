@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Model.h"
 #include "MyClass/Player/Player.h"
+#include "MyClass/Skydome/Skydome.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -46,14 +47,19 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
-	uint32_t texHandle_ = 0;
-	std::unique_ptr<Model> model_ = nullptr;
-	ViewProjection viewProjection_;
-	std::unique_ptr<Player> player_;
+
+
 	bool isDebugCameraActive_ = false;
 	std::unique_ptr<DebugCamera> debugCamera_;
 
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	uint32_t texHandle_ = 0;
+	std::unique_ptr<Model> model_;
+	ViewProjection viewProjection_;
+	std::unique_ptr<Player> player_;
+
+	std::unique_ptr<Model> skydomeModel_;
+	std::unique_ptr<Skydome> skydome_;
 };
