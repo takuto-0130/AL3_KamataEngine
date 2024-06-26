@@ -18,6 +18,9 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 	player_ = std::make_unique<Player>();
 	player_->Initialize(model_.get(), texHandle_);
+	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() { player_->Update(); }
