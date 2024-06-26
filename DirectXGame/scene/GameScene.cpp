@@ -27,9 +27,9 @@ void GameScene::Update() {
 	player_->Update();
 
 
-	//===============
+	//================
 	// デバッグカメラ
-	//===============
+	//================
 	debugCamera_->Update();
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_L)) {
