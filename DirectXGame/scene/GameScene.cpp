@@ -32,6 +32,7 @@ void GameScene::Initialize() {
 void GameScene::Update() { 
 	player_->Update();
 
+	skydome_->Update();
 
 	//================
 	// デバッグカメラ
@@ -81,6 +82,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	skydome_->Draw(viewProjection_);
 
 	player_->Draw(viewProjection_);
 
