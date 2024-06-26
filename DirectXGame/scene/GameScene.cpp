@@ -16,6 +16,7 @@ void GameScene::Initialize() {
 	texHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
 	model_.reset(Model::Create());
 	viewProjection_.Initialize();
+	viewProjection_.farZ = 1000.0f;
 	player_ = std::make_unique<Player>();
 	player_->Initialize(model_.get(), texHandle_);
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
