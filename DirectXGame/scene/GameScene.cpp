@@ -5,8 +5,6 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
-	delete model_;
-	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -15,10 +13,10 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	texHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
-	model_ = Model::Create();
+	model_.reset(Model::Create());
 	viewProjection_.Initialize();
-	player_ = new Player();
-	player_->Initialize(model_, texHandle_);
+	player_ = std::make_unique<Player>();
+	player_->Initialize(model_.get(), texHandle_);
 }
 
 void GameScene::Update() { player_->Update(); }
