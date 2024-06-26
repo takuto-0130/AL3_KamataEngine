@@ -49,7 +49,9 @@ private: // メンバ変数
 	uint32_t texHandle_ = 0;
 	std::unique_ptr<Model> model_ = nullptr;
 	ViewProjection viewProjection_;
-	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<Player> player_;
+	bool isDebugCameraActive_ = false;
+	std::unique_ptr<DebugCamera> debugCamera_;
 
 	/// <summary>
 	/// ゲームシーン用
