@@ -1,8 +1,10 @@
 #include "Player.h"
 
 void Player::Initialize(Model* model, uint32_t texHandle) { 
+	assert(model);
 	model_ = model;
 	texHandle_ = texHandle;
+	worldTransform_.Initialize();
 }
 
 void Player::Update() { 
