@@ -7,6 +7,7 @@
 #include "MyClass/Player/Player.h"
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/Ground/Ground.h"
+#include "MyClass/FollowCamera/FollowCamera.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
@@ -68,4 +69,6 @@ private: // メンバ変数
 
 	std::unique_ptr<Model> groundModel_;
 	std::unique_ptr<Ground> ground_;
+
+	std::unique_ptr<FollowCamera> followCamera_;
 };

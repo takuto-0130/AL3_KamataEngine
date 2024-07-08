@@ -31,6 +31,12 @@ public:
 
 	void UpdateFlotingGimmick();
 
+	const WorldTransform& GetWorldTransform() { return worldTransformBase_; }
+
+	void SetViewProjection(const ViewProjection* viewProjection) { 
+		viewProjection_ = viewProjection;
+	}
+
 private:
 	std::vector<std::unique_ptr<Model>> models_;
 	uint32_t texHandle_ = 0;
@@ -41,6 +47,9 @@ private:
 	WorldTransform worldTransformR_arm_;
 
 	float floatingParamater_ = 0.0f;
+	const float kCharacterSpeed_ = 0.5f;
+
+	const ViewProjection* viewProjection_ = nullptr;
 };
 
 enum PlayerParts {

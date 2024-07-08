@@ -2,6 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <imgui.h>
+#include "MyClass/math/mathFunc.h"
+#include "MyClass/math/Matrix4x4Func.h"
 
 void Player::Initialize(std::vector<std::unique_ptr<Model>>& models, uint32_t texHandle) { 
 	assert(models[0]);
@@ -28,6 +30,16 @@ void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
 
 void Player::Update() { 
 	UpdateFlotingGimmick();
+	XINPUT_STATE joyState;
+	Vector3 move{0, 0, 0};
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed_;
+		move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed_;
+		move = TransformNormal(move, MakeRotateYMatrix(viewProjection_->rotation_.y));
+		worldTransformBase_.translation_ += move;
+		// Y軸周り角度(θy)
+		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+	}
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
