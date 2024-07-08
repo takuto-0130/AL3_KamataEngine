@@ -18,8 +18,20 @@ void GameScene::Initialize() {
 	model_.reset(Model::Create());
 	viewProjection_.Initialize();
 	viewProjection_.farZ = 1000.0f;
+
+	playerModel_.reset(Model::CreateFromOBJ("PlayerBody"));
+	playerModels_.push_back(std::move(playerModel_));
+	playerModel_.reset(Model::CreateFromOBJ("PlayerHead"));
+	playerModels_.push_back(std::move(playerModel_));
+	playerModel_.reset(Model::CreateFromOBJ("PlayerRightArm"));
+	playerModels_.push_back(std::move(playerModel_));
+	playerModel_.reset(Model::CreateFromOBJ("PlayerLeftArm"));
+	playerModels_.push_back(std::move(playerModel_));
+
 	player_ = std::make_unique<Player>();
-	player_->Initialize(model_.get(), texHandle_);
+	player_->Initialize(playerModels_, texHandle_);
+
+
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
@@ -27,12 +39,19 @@ void GameScene::Initialize() {
 	skydomeModel_.reset(Model::CreateFromOBJ("skydome"));
 	skydome_ = std::make_unique <Skydome>();
 	skydome_->Initialize(skydomeModel_.get());
+
+	groundModel_.reset(Model::CreateFromOBJ("Ground"));
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(groundModel_.get());
+
+
 }
 
 void GameScene::Update() { 
 	player_->Update();
 
 	skydome_->Update();
+	ground_->Update();
 
 	//================
 	// デバッグカメラ
@@ -84,6 +103,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	skydome_->Draw(viewProjection_);
+	ground_->Draw(viewProjection_);
 
 	player_->Draw(viewProjection_);
 

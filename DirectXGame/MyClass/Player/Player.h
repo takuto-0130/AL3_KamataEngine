@@ -15,7 +15,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t texHandle);
+	void Initialize(std::vector<std::unique_ptr<Model>>& models, uint32_t texHandle);
 
 	/// <summary>
 	/// 更新
@@ -29,6 +29,11 @@ public:
 
 private:
 	WorldTransform worldTransform_;
-	Model* model_ = nullptr;
+	std::vector<std::unique_ptr<Model>> models_;
 	uint32_t texHandle_ = 0;
+	WorldTransform worldTransformBase_;
+	WorldTransform worldTransformBody_;
+	WorldTransform worldTransformHead_;
+	WorldTransform worldTransformL_arm_;
+	WorldTransform worldTransformR_arm_;
 };

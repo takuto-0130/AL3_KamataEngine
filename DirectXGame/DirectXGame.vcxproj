@@ -111,6 +111,7 @@
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyClass\Ground\Ground.cpp" />
     <ClCompile Include="MyClass\math\mathFunc.cpp" />
     <ClCompile Include="MyClass\math\Matrix4x4Func.cpp" />
     <ClCompile Include="MyClass\math\operatorOverload.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="MyClass\Ground\Ground.h" />
     <ClInclude Include="MyClass\math\mathFunc.h" />
     <ClInclude Include="MyClass\math\Matrix4x4Func.h" />
     <ClInclude Include="MyClass\math\operatorOverload.h" />
