@@ -23,9 +23,9 @@ void GameScene::Initialize() {
 	playerModels_.push_back(std::move(playerModel_));
 	playerModel_.reset(Model::CreateFromOBJ("PlayerHead"));
 	playerModels_.push_back(std::move(playerModel_));
-	playerModel_.reset(Model::CreateFromOBJ("PlayerRightArm"));
-	playerModels_.push_back(std::move(playerModel_));
 	playerModel_.reset(Model::CreateFromOBJ("PlayerLeftArm"));
+	playerModels_.push_back(std::move(playerModel_));
+	playerModel_.reset(Model::CreateFromOBJ("PlayerRightArm"));
 	playerModels_.push_back(std::move(playerModel_));
 
 	player_ = std::make_unique<Player>();

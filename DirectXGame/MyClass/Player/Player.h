@@ -17,6 +17,8 @@ public:
 	/// </summary>
 	void Initialize(std::vector<std::unique_ptr<Model>>& models, uint32_t texHandle);
 
+	void InitializeFloatingGimmick();
+
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -27,8 +29,9 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void UpdateFlotingGimmick();
+
 private:
-	WorldTransform worldTransform_;
 	std::vector<std::unique_ptr<Model>> models_;
 	uint32_t texHandle_ = 0;
 	WorldTransform worldTransformBase_;
@@ -36,4 +39,13 @@ private:
 	WorldTransform worldTransformHead_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
+
+	float floatingParamater_ = 0.0f;
+};
+
+enum PlayerParts {
+	Body,
+	Head,
+	L_arm,
+	R_arm
 };
