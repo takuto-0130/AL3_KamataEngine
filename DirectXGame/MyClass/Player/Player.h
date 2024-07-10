@@ -50,6 +50,7 @@ private:
 	const float kCharacterSpeed_ = 0.5f;
 
 	const ViewProjection* viewProjection_ = nullptr;
+	float rotateY = 0;
 };
 
 enum PlayerParts {

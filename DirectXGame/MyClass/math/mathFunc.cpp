@@ -1,5 +1,6 @@
 #include "mathFunc.h"
 #define _USE_MATH_DEFINES
+#include <math.h>
 #include <cmath>
 #include <MyClass/math/operatorOverload.h>
 #include <algorithm>
@@ -116,4 +117,16 @@ Vector3 CatmullRomPosition(const std::vector<Vector3>& points, float t) {
 	const Vector3& p2 = points[index2];
 	const Vector3& p3 = points[index3];
 	return CatmullRomInterpolation(p0, p1, p2, p3, t_2);
+}
+
+float LerpShortAngle(float a, float b, float t) { 
+	float diff = b - a;
+	float c;
+	c = std::fmod(diff, 2 * float(M_PI));
+	if (c > float(M_PI)) {
+		c = c -2 * float(M_PI);
+	} else if (c < -float(M_PI)) {
+		c = c + 2 * float(M_PI);
+	}
+	return Lerp(a, a + c, t);
 }

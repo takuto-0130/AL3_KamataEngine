@@ -33,13 +33,23 @@ void Player::Update() {
 	XINPUT_STATE joyState;
 	Vector3 move{0, 0, 0};
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-		move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed_;
-		move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed_;
-		move = TransformNormal(move, MakeRotateYMatrix(viewProjection_->rotation_.y));
-		worldTransformBase_.translation_ += move;
-		// Y軸周り角度(θy)
-		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+		const float threshold = 0.7f;
+		bool isMoving = false;
+		move = {float(joyState.Gamepad.sThumbLX) / SHRT_MAX, 0, float(joyState.Gamepad.sThumbLY) / SHRT_MAX};
+		if (Length(move) > threshold) {
+			isMoving = true;
+		}
+		if (isMoving) {
+			move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed_;
+			move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed_;
+			move = TransformNormal(move, MakeRotateYMatrix(viewProjection_->rotation_.y));
+			worldTransformBase_.translation_ += move;
+			// Y軸周り角度(θy)
+			rotateY = std::atan2(move.x, move.z);
+		}
 	}
+	worldTransformBase_.rotation_.y = LerpShortAngle(worldTransformBase_.rotation_.y, rotateY, 0.1f);
+	
 	worldTransformBase_.UpdateMatrix();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
