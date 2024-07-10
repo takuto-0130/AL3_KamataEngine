@@ -64,7 +64,7 @@ void Player::UpdateFlotingGimmick() {
 	const float amplitude = 0.2f;
 	// 1step加算
 	floatingParamater_ += step;
-	// 2πを超えない
+	// 
 	floatingParamater_ = std::fmod(floatingParamater_, 2.0f * float(M_PI));
 
 	ImGui::Begin("Player");
