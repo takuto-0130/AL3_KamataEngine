@@ -15,7 +15,7 @@ void FollowCamera::Update() {
 		Vector3 offset = {0.0f, 2.0f, -10.0f};
 
 		XINPUT_STATE joyState;
-		Matrix4x4 rotateMatrix;
+		Matrix4x4 rotateMatrix = MakeIdentity4x4();
 		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 			const float cameraRotate = 0.05f;
 			viewProjection_.rotation_.y += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * cameraRotate;
