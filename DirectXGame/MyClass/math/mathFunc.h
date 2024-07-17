@@ -3,6 +3,8 @@
 #include "Vector3.h"
 #include "Vector2.h"
 #include <vector>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 

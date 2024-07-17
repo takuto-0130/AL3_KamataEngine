@@ -8,6 +8,8 @@ public:
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(const std::vector<Model*>& models) override;
 
+	void InitializeArmGimmick();
+
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -18,10 +20,16 @@ public:
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection) override;
 
+	void UpdateArmGimmick();
+
 private:
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformL_arm_;
 	WorldTransform worldTransformR_arm_;
+
+	float floatingParamater_ = 0.0f;
+
+	float kOffsetArmHeight = 0.25f;
 };
 
 enum EnemyParts { 
