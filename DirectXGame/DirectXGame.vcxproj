@@ -111,6 +111,8 @@
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyClass\BaseCharacter\BaseCharacter.cpp" />
+    <ClCompile Include="MyClass\Enemy\Enemy.cpp" />
     <ClCompile Include="MyClass\FollowCamera\FollowCamera.cpp" />
     <ClCompile Include="MyClass\Ground\Ground.cpp" />
     <ClCompile Include="MyClass\math\mathFunc.cpp" />
@@ -150,6 +152,8 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="MyClass\BaseCharacter\BaseCharacter.h" />
+    <ClInclude Include="MyClass\Enemy\Enemy.h" />
     <ClInclude Include="MyClass\FollowCamera\FollowCamera.h" />
     <ClInclude Include="MyClass\Ground\Ground.h" />
     <ClInclude Include="MyClass\math\mathFunc.h" />

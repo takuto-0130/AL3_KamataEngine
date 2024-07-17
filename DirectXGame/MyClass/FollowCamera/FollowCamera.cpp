@@ -29,8 +29,6 @@ void FollowCamera::Update() {
 	viewProjection_.UpdateMatrix();
 	viewProjection_.TransferMatrix();
 	ImGui::Begin("Player");
-	ImGui::DragFloat3("head", &viewProjection_.translation_.x, 0.01f);
-	/*ImGui::DragFloat3("L", &viewProjection_.translation_.x, 0.01f);
-	ImGui::DragFloat3("R", &viewProjection_.translation_.x, 0.01f);*/
+	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 0.01f);
 	ImGui::End();
 }

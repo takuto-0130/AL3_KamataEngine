@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Model.h"
 #include "MyClass/Player/Player.h"
+#include "MyClass/Enemy/Enemy.h"
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/Ground/Ground.h"
 #include "MyClass/FollowCamera/FollowCamera.h"
@@ -57,12 +58,17 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	uint32_t texHandle_ = 0;
+	
 	std::unique_ptr<Model> model_;
 	ViewProjection viewProjection_;
+
 	std::unique_ptr<Player> player_;
 	std::unique_ptr<Model> playerModel_;
 	std::vector<std::unique_ptr<Model>> playerModels_;
+
+	std::unique_ptr<Enemy> enemy_;
+	std::unique_ptr<Model> enemyModel_;
+	std::vector<std::unique_ptr<Model>> enemyModels_;
 
 	std::unique_ptr<Model> skydomeModel_;
 	std::unique_ptr<Skydome> skydome_;

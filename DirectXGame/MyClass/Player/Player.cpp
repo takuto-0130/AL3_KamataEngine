@@ -5,13 +5,11 @@
 #include "MyClass/math/mathFunc.h"
 #include "MyClass/math/Matrix4x4Func.h"
 
-void Player::Initialize(std::vector<std::unique_ptr<Model>>& models, uint32_t texHandle) { 
+
+void Player::Initialize(const std::vector<Model*>& models) { 
 	assert(models[0]);
-	for (size_t i = 0; i < models.size(); ++i) {
-		models_.push_back(std::move(models[i]));
-	}
-	texHandle_ = texHandle;
-	worldTransformBase_.Initialize();
+	BaseCharacter::Initialize(models);
+	
 	worldTransformBody_.Initialize();
 	worldTransformHead_.Initialize();
 	worldTransformHead_.translation_ = {0.f, 1.6f, 0.f};
@@ -19,7 +17,7 @@ void Player::Initialize(std::vector<std::unique_ptr<Model>>& models, uint32_t te
 	worldTransformL_arm_.translation_ = {-0.55f, 1.22f, 0.f};
 	worldTransformR_arm_.Initialize();
 	worldTransformR_arm_.translation_ = {0.55f, 1.22f, 0.f};
-	worldTransformBody_.parent_ = &worldTransformBase_;
+	worldTransformBody_.parent_ = &worldTransform_;
 	worldTransformHead_.parent_ = &worldTransformBody_;
 	worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
@@ -43,25 +41,25 @@ void Player::Update() {
 			move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed_;
 			move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed_;
 			move = TransformNormal(move, MakeRotateYMatrix(viewProjection_->rotation_.y));
-			worldTransformBase_.translation_ += move;
+			worldTransform_.translation_ += move;
 			// Y軸周り角度(θy)
 			rotateY = std::atan2(move.x, move.z);
 		}
 	}
-	worldTransformBase_.rotation_.y = LerpShortAngle(worldTransformBase_.rotation_.y, rotateY, 0.1f);
+	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, rotateY, 0.1f);
 	
-	worldTransformBase_.UpdateMatrix();
+	BaseCharacter::Update();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 }
 
-void Player::Draw(ViewProjection& viewProjection) { 
-	models_[Body]->Draw(worldTransformBody_, viewProjection);
-	models_[Head]->Draw(worldTransformHead_, viewProjection);
-	models_[L_arm]->Draw(worldTransformL_arm_, viewProjection);
-	models_[R_arm]->Draw(worldTransformR_arm_, viewProjection);
+void Player::Draw(const ViewProjection& viewProjection) { 
+	models_[kBody]->Draw(worldTransformBody_, viewProjection);
+	models_[kHead]->Draw(worldTransformHead_, viewProjection);
+	models_[kL_arm]->Draw(worldTransformL_arm_, viewProjection);
+	models_[kR_arm]->Draw(worldTransformR_arm_, viewProjection);
 
 }
 

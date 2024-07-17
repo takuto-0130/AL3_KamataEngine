@@ -15,7 +15,6 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
-	texHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
 	model_.reset(Model::Create());
 	viewProjection_.Initialize();
 	viewProjection_.farZ = 1000.0f;
@@ -30,7 +29,24 @@ void GameScene::Initialize() {
 	playerModels_.push_back(std::move(playerModel_));
 
 	player_ = std::make_unique<Player>();
-	player_->Initialize(playerModels_, texHandle_);
+	std::vector<Model*> playerModels = {
+	    playerModels_[PlayerParts::kBody].get(), playerModels_[PlayerParts::kHead].get(), 
+		playerModels_[PlayerParts::kL_arm].get(), playerModels_[PlayerParts::kR_arm].get()
+	};
+	player_->Initialize(playerModels);
+
+
+	enemyModel_.reset(Model::CreateFromOBJ("EnemyBody"));
+	enemyModels_.push_back(std::move(enemyModel_));
+	enemyModel_.reset(Model::CreateFromOBJ("EnemyLeftArm"));
+	enemyModels_.push_back(std::move(enemyModel_));
+	enemyModel_.reset(Model::CreateFromOBJ("EnemyRightArm"));
+	enemyModels_.push_back(std::move(enemyModel_));
+	enemy_ = std::make_unique<Enemy>();
+	std::vector<Model*> enemyModels = {
+		enemyModels_[EnemyParts::kEnemyBody].get(), enemyModels_[EnemyParts::kEnemyL_arm].get(), enemyModels_[EnemyParts::kEnemyR_arm].get()
+	};
+	enemy_->Initialize(enemyModels);
 
 
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
@@ -54,6 +70,7 @@ void GameScene::Initialize() {
 
 void GameScene::Update() { 
 	player_->Update();
+	enemy_->Update();
 
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -115,6 +132,7 @@ void GameScene::Draw() {
 	skydome_->Draw(viewProjection_);
 	ground_->Draw(viewProjection_);
 
+	enemy_->Draw(viewProjection_);
 	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
