@@ -27,11 +27,14 @@ void GameScene::Initialize() {
 	playerModels_.push_back(std::move(playerModel_));
 	playerModel_.reset(Model::CreateFromOBJ("PlayerRightArm"));
 	playerModels_.push_back(std::move(playerModel_));
+	playerModel_.reset(Model::CreateFromOBJ("Hammer"));
+	playerModels_.push_back(std::move(playerModel_));
 
 	player_ = std::make_unique<Player>();
 	std::vector<Model*> playerModels = {
 	    playerModels_[PlayerParts::kBody].get(), playerModels_[PlayerParts::kHead].get(), 
-		playerModels_[PlayerParts::kL_arm].get(), playerModels_[PlayerParts::kR_arm].get()
+		playerModels_[PlayerParts::kL_arm].get(), playerModels_[PlayerParts::kR_arm].get(),
+		playerModels_[PlayerParts::kHammer].get()
 	};
 	player_->Initialize(playerModels);
 
@@ -48,7 +51,7 @@ void GameScene::Initialize() {
 	};
 	enemy_->Initialize(enemyModels);
 
-
+	
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);

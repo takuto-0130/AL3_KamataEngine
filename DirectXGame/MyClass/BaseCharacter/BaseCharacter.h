@@ -29,6 +29,10 @@ public:
 	/// <returns>ワールド変換データ</returns>
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
+	
+
+	Vector3 GetWorldPosition() { return Vector3{worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]}; }
+
 protected:
 	std::vector<Model*> models_;
 	WorldTransform worldTransform_;

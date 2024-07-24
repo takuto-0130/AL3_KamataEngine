@@ -21,13 +21,126 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHead_.parent_ = &worldTransformBody_;
 	worldTransformL_arm_.parent_ = &worldTransformBody_;
 	worldTransformR_arm_.parent_ = &worldTransformBody_;
+	worldTransformHammer_.parent_ = &worldTransformBody_;
+
+	worldTransformHammer_.Initialize();
+	worldTransformHammer_.scale_ = {0.5f, 0.5f, 0.5f};
+	worldTransformHammer_.translation_ = {0.0f, 1.4f, 0.0f};
+
 	InitializeFloatingGimmick();
+	InitializeAttackGimmick();
+	input_ = Input::GetInstance();
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
 
+void Player::InitializeAttackGimmick() { 
+	attackParamater_ = float(M_PI) / 2.0f;
+	furiageWaite_ = 0;
+	attackWait_ = 0;
+	attackCurrent_ = 0;
+	attackAfterWait_ = 0;
+}
+
 void Player::Update() { 
+	if (behaviorRequest_) {
+		behavior_ = behaviorRequest_.value();
+		switch (behavior_) { 
+		case Behavior::kRoot:
+		default:
+			InitializeFloatingGimmick();
+			break;
+		case Behavior::kAttack:
+			InitializeAttackGimmick();
+			break;
+		}
+		behaviorRequest_ = std::nullopt;
+	}
+
+	switch (behavior_) {
+	case Behavior::kRoot:
+	default:
+		BehaviorRootUpdate();
+		break;
+	case Behavior::kAttack:
+		BehaviorAttackUpdate();
+		break;
+	}
+	int a = attackWaitTime_;
+	int b = attackTime_;
+	int c = attackAfterWaitTime_;
+	int d = furiageTime_;
+	ImGui::Begin("Attack");
+	ImGui::SliderInt("before", &d, 0, 100);
+	ImGui::SliderInt("wait", &a, 0, 100);
+	ImGui::SliderInt("attack", &b, 0, 100);
+	ImGui::SliderInt("after", &c, 0, 100);
+	ImGui::End();
+	attackWaitTime_ = a;
+	attackTime_ = b;
+	attackAfterWaitTime_ = c;
+	furiageTime_ = d;
+}
+
+void Player::BehaviorRootUpdate() {
 	UpdateFlotingGimmick();
+	Move();
+
+	BaseCharacter::Update();
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+	worldTransformHammer_.UpdateMatrix();
+	if (input_->TriggerKey(DIK_SPACE)) {
+		behaviorRequest_ = Behavior::kAttack;
+	}
+}
+
+void Player::BehaviorAttackUpdate() {
+	// 1フレームでのパラメーター加算値
+	const float waitStep = 2.0f * float(M_PI) / (furiageTime_ * 4.0f);
+
+	const float step = 2.0f * float(M_PI) / (attackTime_ * 4.0f);
+
+	const float amplitude = 1.9f;
+
+	if (furiageWaite_ <= furiageTime_) {
+		furiageWaite_++;
+		attackParamater_ -= waitStep;
+	}
+	else if (attackWait_ < attackWaitTime_) {
+		attackWait_++;
+	}
+	else if (attackCurrent_ <= attackTime_) {
+		attackCurrent_++;
+		attackParamater_ += step;
+	} 
+	else if (attackAfterWait_ < attackAfterWaitTime_) {
+		attackAfterWait_++;
+	}
+	else {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+	
+	float offset = -0.2f;
+
+	worldTransformHammer_.rotation_.x = std::sin(attackParamater_) * amplitude + offset;
+
+	offset = -3.4f;
+	worldTransformL_arm_.rotation_.x = std::sin(attackParamater_) * amplitude + offset;
+	worldTransformR_arm_.rotation_.x = std::sin(attackParamater_) * amplitude + offset;
+	
+	Move();
+	BaseCharacter::Update();
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
+	worldTransformHammer_.UpdateMatrix();
+}
+
+void Player::Move() {
 	XINPUT_STATE joyState;
 	Vector3 move{0, 0, 0};
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
@@ -47,12 +160,6 @@ void Player::Update() {
 		}
 	}
 	worldTransform_.rotation_.y = LerpShortAngle(worldTransform_.rotation_.y, rotateY, 0.1f);
-	
-	BaseCharacter::Update();
-	worldTransformBody_.UpdateMatrix();
-	worldTransformHead_.UpdateMatrix();
-	worldTransformL_arm_.UpdateMatrix();
-	worldTransformR_arm_.UpdateMatrix();
 }
 
 void Player::Draw(const ViewProjection& viewProjection) { 
@@ -60,7 +167,9 @@ void Player::Draw(const ViewProjection& viewProjection) {
 	models_[kHead]->Draw(worldTransformHead_, viewProjection);
 	models_[kL_arm]->Draw(worldTransformL_arm_, viewProjection);
 	models_[kR_arm]->Draw(worldTransformR_arm_, viewProjection);
-
+	if (behavior_ == Behavior::kAttack) {
+		models_[kHammer]->Draw(worldTransformHammer_, viewProjection);
+	}
 }
 
 void Player::UpdateFlotingGimmick() { 
@@ -75,11 +184,6 @@ void Player::UpdateFlotingGimmick() {
 	// 
 	floatingParamater_ = std::fmod(floatingParamater_, 2.0f * float(M_PI));
 
-	ImGui::Begin("Player");
-	ImGui::DragFloat3("head", &worldTransformHead_.translation_.x, 0.01f);
-	ImGui::DragFloat3("L", &worldTransformL_arm_.translation_.x, 0.01f);
-	ImGui::DragFloat3("R", &worldTransformR_arm_.translation_.x, 0.01f);
-	ImGui::End();
 
 	worldTransformBody_.translation_.y = std::sin(floatingParamater_) * amplitude;
 

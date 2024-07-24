@@ -55,7 +55,7 @@ void Enemy::UpdateArmGimmick() {
 	//
 	floatingParamater_ = std::fmod(floatingParamater_, 2.0f * float(M_PI));
 
-	ImGui::Begin("Player");
+	ImGui::Begin("enemy");
 	ImGui::DragFloat3("L", &worldTransformL_arm_.translation_.x, 0.01f);
 	ImGui::DragFloat3("R", &worldTransformR_arm_.translation_.x, 0.01f);
 	ImGui::End();
