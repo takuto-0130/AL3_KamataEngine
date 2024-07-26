@@ -5,6 +5,14 @@
 #include <assert.h>
 #include <optional>
 
+struct WorkDash {
+	uint32_t dashParamater_ = 0;
+	int dashFrame = 10;
+	int dashCurrentTime_ = 0;
+	float dashLength_ = 10.0f;
+	Vector3 goalVector_{};
+};
+
 /// <summary>
 /// 自キャラ
 /// </summary>
@@ -18,7 +26,9 @@ public:
 
 	void InitializeFloatingGimmick();
 
-	void InitializeAttackGimmick();
+	void BehaviorAttackInitialize();
+
+	void BehaviorDashInitialize();
 
 	/// <summary>
 	/// 更新
@@ -28,6 +38,8 @@ public:
 	void BehaviorRootUpdate();
 
 	void BehaviorAttackUpdate();
+
+	void BehaviorDashUpdate();
 
 	void Move();
 
@@ -50,7 +62,7 @@ private:
 	WorldTransform worldTransformHammer_;
 
 	float floatingParamater_ = 0.0f;
-	const float kCharacterSpeed_ = 0.5f;
+	const float kCharacterSpeed_ = 0.2f;
 	float attackParamater_ = 0.0f;
 
 	const ViewProjection* viewProjection_ = nullptr;
@@ -73,10 +85,12 @@ private:
 	int attackAfterWaitTime_ = 20;
 #pragma endregion // 攻撃モーション用
 
+	WorkDash workDash_;
 
 	enum class Behavior {
-		kRoot,
-		kAttack
+		kRoot,		// !< 通常状態
+		kAttack,	// !< 攻撃中
+		kDash,		// !< ダッシュ中
 	};
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;

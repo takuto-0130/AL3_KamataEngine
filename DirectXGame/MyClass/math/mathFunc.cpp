@@ -30,6 +30,7 @@ float Dot(const Vector3& v1, const Vector3& v2) {
 	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
 }
 
+
 Vector3 Subtruct(const Vector3& v1, const Vector3& v2) { 
 	return {v1.x - v2.x, v1.y - v2.y, v1.z - v2.z};
 }
@@ -49,6 +50,7 @@ const Vector3 Multiply(const Vector3& v, const float& s) {
 const Vector3 Multiply(const float& s, const Vector3& v) { 
 	return {v.x * s, v.y * s, v.z * s}; 
 }
+
 
 float Lerp(const float& a, const float& b, float t) { 
 	return a + t * (b - a);

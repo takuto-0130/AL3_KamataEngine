@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include "MyClass/math/mathFunc.h"
 #include "MyClass/math/Matrix4x4Func.h"
+#include "MyClass/math/operatorOverload.h"
 
 
 void Player::Initialize(const std::vector<Model*>& models) { 
@@ -28,18 +29,28 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformHammer_.translation_ = {0.0f, 1.4f, 0.0f};
 
 	InitializeFloatingGimmick();
-	InitializeAttackGimmick();
+	BehaviorAttackInitialize();
 	input_ = Input::GetInstance();
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
 
-void Player::InitializeAttackGimmick() { 
+void Player::BehaviorAttackInitialize() { 
 	attackParamater_ = float(M_PI) / 2.0f;
 	furiageWaite_ = 0;
 	attackWait_ = 0;
 	attackCurrent_ = 0;
 	attackAfterWait_ = 0;
+}
+
+void Player::BehaviorDashInitialize() { 
+	worldTransform_.rotation_.y = rotateY;
+	workDash_.dashParamater_ = 0;
+	workDash_.dashCurrentTime_ = 0;
+	Vector3 vec{0, 0, 1};
+	Matrix4x4 rYMatrix = MakeRotateYMatrix(worldTransform_.rotation_.y);
+	vec = TransformNormal(vec, rYMatrix);
+	workDash_.goalVector_ = vec * workDash_.dashLength_;
 }
 
 void Player::Update() { 
@@ -51,7 +62,10 @@ void Player::Update() {
 			InitializeFloatingGimmick();
 			break;
 		case Behavior::kAttack:
-			InitializeAttackGimmick();
+			BehaviorAttackInitialize();
+			break;
+		case Behavior::kDash:
+			BehaviorDashInitialize();
 			break;
 		}
 		behaviorRequest_ = std::nullopt;
@@ -65,6 +79,9 @@ void Player::Update() {
 	case Behavior::kAttack:
 		BehaviorAttackUpdate();
 		break;
+	case Behavior::kDash:
+		BehaviorDashUpdate();
+		break;
 	}
 	int a = attackWaitTime_;
 	int b = attackTime_;
@@ -75,6 +92,8 @@ void Player::Update() {
 	ImGui::SliderInt("wait", &a, 0, 100);
 	ImGui::SliderInt("attack", &b, 0, 100);
 	ImGui::SliderInt("after", &c, 0, 100);
+	ImGui::InputInt("frame", &workDash_.dashCurrentTime_);
+	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.01f);
 	ImGui::End();
 	attackWaitTime_ = a;
 	attackTime_ = b;
@@ -92,13 +111,21 @@ void Player::BehaviorRootUpdate() {
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 	worldTransformHammer_.UpdateMatrix();
-	if (input_->TriggerKey(DIK_SPACE)) {
-		behaviorRequest_ = Behavior::kAttack;
+	XINPUT_STATE joyState;
+	Vector3 move{0, 0, 0};
+	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_X) {
+			behaviorRequest_ = Behavior::kAttack;
+		}
+		if (joyState.Gamepad.wButtons == XINPUT_GAMEPAD_A) {
+			behaviorRequest_ = Behavior::kDash;
+		}
 	}
 }
 
 void Player::BehaviorAttackUpdate() {
 	// 1フレームでのパラメーター加算値
+	
 	const float waitStep = 2.0f * float(M_PI) / (furiageTime_ * 4.0f);
 
 	const float step = 2.0f * float(M_PI) / (attackTime_ * 4.0f);
@@ -131,13 +158,32 @@ void Player::BehaviorAttackUpdate() {
 	worldTransformL_arm_.rotation_.x = std::sin(attackParamater_) * amplitude + offset;
 	worldTransformR_arm_.rotation_.x = std::sin(attackParamater_) * amplitude + offset;
 	
-	Move();
 	BaseCharacter::Update();
 	worldTransformBody_.UpdateMatrix();
 	worldTransformHead_.UpdateMatrix();
 	worldTransformL_arm_.UpdateMatrix();
 	worldTransformR_arm_.UpdateMatrix();
 	worldTransformHammer_.UpdateMatrix();
+}
+
+void Player::BehaviorDashUpdate() { 
+	Vector3 step = workDash_.goalVector_ / static_cast<float>(workDash_.dashFrame);
+	if (workDash_.dashCurrentTime_ <= workDash_.dashFrame) {
+		workDash_.dashCurrentTime_++;
+		worldTransform_.translation_ += step;
+	} else {
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	ImGui::Begin("Attack");
+	ImGui::DragFloat3("rotate", &step.x, 0.01f);
+	ImGui::End();
+
+	BaseCharacter::Update();
+	worldTransformBody_.UpdateMatrix();
+	worldTransformHead_.UpdateMatrix();
+	worldTransformL_arm_.UpdateMatrix();
+	worldTransformR_arm_.UpdateMatrix();
 }
 
 void Player::Move() {
@@ -151,10 +197,10 @@ void Player::Move() {
 			isMoving = true;
 		}
 		if (isMoving) {
-			move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX * kCharacterSpeed_;
-			move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX * kCharacterSpeed_;
-			move = TransformNormal(move, MakeRotateYMatrix(viewProjection_->rotation_.y));
-			worldTransform_.translation_ += move;
+			move.x += float(joyState.Gamepad.sThumbLX) / SHRT_MAX;
+			move.z += float(joyState.Gamepad.sThumbLY) / SHRT_MAX;
+			move = TransformNormal(Normalize(move), MakeRotateYMatrix(viewProjection_->rotation_.y));
+			worldTransform_.translation_ += move * kCharacterSpeed_;
 			// Y軸周り角度(θy)
 			rotateY = std::atan2(move.x, move.z);
 		}
