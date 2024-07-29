@@ -41,6 +41,8 @@ public:
 
 	void BehaviorDashUpdate();
 
+	void BehaviorJumpUpdate();
+
 	void Move();
 
 	/// <summary>
@@ -91,6 +93,7 @@ private:
 		kRoot,		// !< 通常状態
 		kAttack,	// !< 攻撃中
 		kDash,		// !< ダッシュ中
+		kJump,		// !< ジャンプ中
 	};
 	Behavior behavior_ = Behavior::kRoot;
 	std::optional<Behavior> behaviorRequest_ = std::nullopt;
