@@ -15,6 +15,8 @@ public:
 
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3 value);
 
+	void Update();
+
 private:
 	GlobalVariables();
 	~GlobalVariables();

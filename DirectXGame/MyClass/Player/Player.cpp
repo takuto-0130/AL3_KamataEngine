@@ -37,7 +37,9 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	const char* groupName = "Player";
 	//globalVariables->CreateGroup(groupName);
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
-	globalVariables->SetValue(groupName, "Test", 90);
+	globalVariables->SetValue(groupName, "Test1", 90);
+	globalVariables->SetValue(groupName, "Test2", 90.0f);
+	globalVariables->SetValue(groupName, "Test3", Vector3(3.0f, 2.0f, 7.0f));
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
