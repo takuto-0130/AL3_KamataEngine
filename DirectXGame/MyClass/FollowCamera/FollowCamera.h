@@ -23,5 +23,5 @@ private:
 	const WorldTransform* target_ = nullptr;
 	Vector3 interTarget_{};
 	float destinationAngleY_ = 0;
-	Matrix4x4 rotateMatrix_;
+	Matrix4x4 rotateMatrix_{};
 };

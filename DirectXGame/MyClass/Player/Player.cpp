@@ -5,6 +5,7 @@
 #include "MyClass/math/mathFunc.h"
 #include "MyClass/math/Matrix4x4Func.h"
 #include "MyClass/math/operatorOverload.h"
+#include "MyClass/GlobalVariables/GlobalVariables.h"
 
 
 void Player::Initialize(const std::vector<Model*>& models) { 
@@ -31,6 +32,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	InitializeFloatingGimmick();
 	BehaviorAttackInitialize();
 	input_ = Input::GetInstance();
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	//globalVariables->CreateGroup(groupName);
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables->SetValue(groupName, "Test", 90);
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
