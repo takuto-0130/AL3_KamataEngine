@@ -10,11 +10,28 @@ public:
 
 	void CreateGroup(const std::string& groupName);
 
+
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
+
+	void AddItem(const std::string& groupName, const std::string& key, int32_t value);
+
+	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
+
 
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 
+	void AddItem(const std::string& groupName, const std::string& key, float value);
+
+	float GetFloatValue(const std::string& groupName, const std::string& key) const;
+
+
 	void SetValue(const std::string& groupName, const std::string& key, const Vector3 value);
+
+	void AddItem(const std::string& groupName, const std::string& key, const Vector3 value);
+
+	Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
+
+
 
 	void Update();
 
@@ -22,6 +39,16 @@ public:
 /// ファイルに書き出し
 /// </summary>
 	void SaveFile(const std::string& groupName);
+
+/// <summary>
+/// ファイルから読み込み
+/// </summary>
+	void LoadFile(const std::string& groupName);
+
+/// <summary>
+/// ディレクトリの全ファイル読み込み
+/// </summary>
+	void LoadFiles();
 
 private:
 	GlobalVariables();

@@ -56,6 +56,8 @@ public:
 		viewProjection_ = viewProjection;
 	}
 
+	void ApplyGlobalVariables();
+
 private:
 	WorldTransform worldTransformBody_;
 	WorldTransform worldTransformHead_;

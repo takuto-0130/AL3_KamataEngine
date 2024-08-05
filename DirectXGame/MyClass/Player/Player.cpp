@@ -36,9 +36,10 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "Player";
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
-	globalVariables->SetValue(groupName, "Test1", 90);
-	globalVariables->SetValue(groupName, "Test2", 90.0f);
-	globalVariables->SetValue(groupName, "Test3", Vector3(3.0f, 2.0f, 7.0f));
+	GlobalVariables::GetInstance()->LoadFiles();
+	globalVariables->AddItem(groupName, "Head Translation", worldTransformHead_.translation_);
+	globalVariables->AddItem(groupName, "ArmL Translation", worldTransformL_arm_.translation_);
+	globalVariables->AddItem(groupName, "ArmR Translation", worldTransformR_arm_.translation_);
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
@@ -62,6 +63,7 @@ void Player::BehaviorDashInitialize() {
 }
 
 void Player::Update() { 
+	ApplyGlobalVariables();
 	if (behaviorRequest_) {
 		behavior_ = behaviorRequest_.value();
 		switch (behavior_) { 
@@ -244,4 +246,12 @@ void Player::UpdateFlotingGimmick() {
 	const float amplitudeArm = -0.4f;
 	worldTransformL_arm_.rotation_.x = std::sin(floatingParamater_) * amplitudeArm;
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParamater_) * amplitudeArm;
+}
+
+void Player::ApplyGlobalVariables() { 
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	worldTransformHead_.translation_ = globalVariables->GetVector3Value(groupName, "Head Translation");
+	worldTransformL_arm_.translation_ = globalVariables->GetVector3Value(groupName, "ArmL Translation");
+	worldTransformR_arm_.translation_ = globalVariables->GetVector3Value(groupName, "ArmR Translation");
 }
