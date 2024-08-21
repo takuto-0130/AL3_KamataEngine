@@ -196,6 +196,8 @@ void Player::BehaviorDashUpdate() {
 	worldTransformR_arm_.UpdateMatrix();
 }
 
+void Player::BehaviorJumpUpdate() {}
+
 void Player::Move() {
 	XINPUT_STATE joyState;
 	Vector3 move{0, 0, 0};
