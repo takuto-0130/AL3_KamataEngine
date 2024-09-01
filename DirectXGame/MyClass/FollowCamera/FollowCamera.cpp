@@ -25,6 +25,16 @@ void FollowCamera::Reset() {
 	viewProjection_.translation_ = interTarget_ + offset;
 }
 
+void FollowCamera::InitiaReset() {
+	if (target_) {
+		interTarget_ = target_->translation_;
+		destinationAngleY_ = target_->rotation_.y;
+	}
+	viewProjection_.rotation_.y = LerpShortAngle(viewProjection_.rotation_.y, destinationAngleY_, 1.0f);
+	Vector3 offset = Offset();
+	viewProjection_.translation_ = interTarget_ + offset;
+}
+
 void FollowCamera::Update() { 
 	if (lockOn_ && lockOn_->ExsitTarget()) {
 		Vector3 lockOnPos = lockOn_->GetTargetPosition();

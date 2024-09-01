@@ -18,6 +18,9 @@
 #include <memory>
 #include "MyClass/Player/LockOn.h"
 
+const int kEndTimer = 30;
+const int kTitleTime = 30;
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -39,6 +42,8 @@ public: // メンバ関数
 	/// </summary>
 	void Initialize();
 
+	void Reset();
+
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
@@ -53,6 +58,8 @@ public: // メンバ関数
 	/// 敵弾を追加
 	/// </summary>
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+	void ReturnToTitle();
 
 private:
 	Enemy* GetEnemys() const { return enemy_.get(); }
@@ -95,4 +102,18 @@ private: // メンバ変数
 	std::unique_ptr<LockOn> lockOn_;
 
 	ColliderManager* colliderManager_ = nullptr;
+
+	std::unique_ptr<Sprite> spriteGameOver_;
+	uint32_t textureGameOver;
+
+	std::unique_ptr<Sprite> spriteGameClear_;
+	uint32_t textureGameClear;
+
+	std::unique_ptr<Sprite> spriteTitle_;
+	uint32_t textureTitle;
+
+	int32_t endTimer = 0;
+
+	int32_t titleTimer = 0;
+	bool isTitle = true;
 };

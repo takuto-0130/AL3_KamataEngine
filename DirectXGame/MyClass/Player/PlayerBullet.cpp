@@ -5,7 +5,7 @@
 void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) { 
 	assert(model);
 	model_ = model;
-	texHandle_ = TextureManager::Load("white1x1.png");
+	texHandle_ = TextureManager::Load("blue1x1.png");
 	worldTransform_.Initialize();
 	worldTransform_.scale_ = {0.3f, 0.3f, 0.3f};
 	worldTransform_.translation_ = position;

@@ -12,6 +12,8 @@ public:
 
 	void Reset();
 
+	void InitiaReset();
+
 	void Update();
 
 	void SetTarget(const WorldTransform* target);

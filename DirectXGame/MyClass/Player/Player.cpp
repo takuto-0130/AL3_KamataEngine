@@ -56,6 +56,9 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	textureCoolDown = TextureManager::Load("./Resources/gauge.png");
 	spriteCoolDown_.reset(Sprite::Create(textureCoolDown, {30, 650}, {0.4f, 0.4f, 0.4f, 0.85f}, {0, 0}));
 
+	textureSousa = TextureManager::Load("./Resources/sousa.png");
+	spriteSousa_.reset(Sprite::Create(textureSousa, {10, 60}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
+
 
 	InitializeFloatingGimmick();
 	BehaviorAttackInitialize();
@@ -72,17 +75,25 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	SetCollisionAttribute(kCollisionAttributePlayer);
 	SetCollisionMask(kCollisionAttributePlayer ^ 0x00000000);
 	HP_ = kPlayerMaxHP;
+
+	textureName = TextureManager::Load("./Resources/playerName.png");
+	spriteName_.reset(Sprite::Create(textureName, {350, 530}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
+
+	textureHP = TextureManager::Load("./Resources/playerHP.png");
+	spriteHP_.reset(Sprite::Create(textureHP, {355, 599}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
 }
 
 void Player::Reset() {
 	worldTransform_.translation_ = {0, 0, -30};
+	worldTransform_.rotation_ = {0, 0, 0};
 	for (PlayerBullet* bullet : bullets_) {
-		delete bullet;
+		bullet->OnCollision();
 	}
 	SetCollisionMask(kCollisionAttributePlayer ^ 0x00000000);
 	dashGauge = 0;
 	HP_ = kPlayerMaxHP;
 	isDead_ = false;
+	rotateY = 0;
 }
 
 void Player::InitializeFloatingGimmick() { floatingParamater_ = 0.0f; }
@@ -357,6 +368,14 @@ void Player::DrawUI() {
 		spriteCoolDown_->SetSize({240.0f, 30.0f});
 		spriteCoolDown_->Draw();*/
 		spriteEdge_->Draw();
+		spriteSousa_->Draw();
+
+
+		spriteName_->Draw();
+
+		spriteHP_->SetTextureRect({0, 0}, {502.0f * (float(HP_) / float(kPlayerMaxHP)), 22.0f});
+		spriteHP_->SetSize({502.0f * (float(HP_) / float(kPlayerMaxHP)), 22.0f});
+		spriteHP_->Draw();
 	}
 }
 

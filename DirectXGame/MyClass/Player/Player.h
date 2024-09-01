@@ -10,7 +10,7 @@
 #include "PlayerBullet.h"
 #include <list>
 
-const int kPlayerMaxHP = 15;
+const int kPlayerMaxHP = 25;
 
 struct WorkDash {
 	uint32_t dashParamater_ = 0;
@@ -135,6 +135,15 @@ private:
 
 	std::unique_ptr<Sprite> spriteCoolDown_;
 	uint32_t textureCoolDown;
+
+	std::unique_ptr<Sprite> spriteSousa_;
+	uint32_t textureSousa;
+
+	std::unique_ptr<Sprite> spriteName_;
+	uint32_t textureName;
+
+	std::unique_ptr<Sprite> spriteHP_;
+	uint32_t textureHP;
 
 	bool isLockOn_ = false;
 

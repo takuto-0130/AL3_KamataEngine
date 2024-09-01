@@ -96,8 +96,7 @@ void Enemy::DrawUI() {
 	spriteName_->Draw();
 
 	spriteHP_->SetTextureRect({0, 0}, {502.0f * (float(HP_) / float(kEnemyMaxHP)), 22.0f});
-	spriteHP_->SetSize({502.0f * (float(HP_) / float(kEnemyMaxHP)), 22.0f
-});
+	spriteHP_->SetSize({502.0f * (float(HP_) / float(kEnemyMaxHP)), 22.0f});
 	spriteHP_->Draw();
 }
 

@@ -11,6 +11,7 @@
 #include "TextureManager.h"
 #include "WinApp.h"
 #include "MyClass/GlobalVariables/GlobalVariables.h"
+#include "Input.h"
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

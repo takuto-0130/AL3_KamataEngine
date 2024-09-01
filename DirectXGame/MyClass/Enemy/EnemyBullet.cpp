@@ -7,7 +7,7 @@
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
 	assert(model);
 	model_ = model;
-	texHandle_ = TextureManager::Load("white1x1.png");
+	texHandle_ = TextureManager::Load("red1x1.png");
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.scale_ = {0.3f, 0.3f, 1.0f};
@@ -29,7 +29,10 @@ void EnemyBullet::Update() {
 }
 
 void EnemyBullet::Draw(const ViewProjection& viewProjection) { 
-	model_->Draw(worldTransform_, viewProjection, texHandle_); }
+	if (worldTransform_.GetConstBuffer().Get()) {
+		model_->Draw(worldTransform_, viewProjection, texHandle_);
+	}
+}
 
 void EnemyBullet::OnCollision() { 
 	isDead_ = true;

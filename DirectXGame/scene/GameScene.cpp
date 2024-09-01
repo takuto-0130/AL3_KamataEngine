@@ -91,37 +91,71 @@ void GameScene::Initialize() {
 	player_->SetLockOn(*lockOn_);
 
 	colliderManager_ = new ColliderManager();
+
+	textureGameOver = TextureManager::Load("./Resources/gameOver.png");
+	spriteGameOver_.reset(Sprite::Create(textureGameOver, {0, 0}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
+
+	textureGameClear = TextureManager::Load("./Resources/gameClear.png");
+	spriteGameClear_.reset(Sprite::Create(textureGameClear, {0, 0}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
+
+	textureTitle = TextureManager::Load("./Resources/title.png");
+	spriteTitle_.reset(Sprite::Create(textureTitle, {0, 0}, {1.0f, 1.0f, 1.0f, 1.0f}, {0, 0}));
+
+	endTimer = 0;
+}
+
+void GameScene::Reset() {
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->OnCollision();
+	}
+	endTimer = 0;
+	enemy_->Reset();
+	player_->Reset();
+	followCamera_->InitiaReset();
 }
 
 void GameScene::Update() { 
-	player_->Update();
-	if (!player_->IsDead() && !enemy_->IsDead()) {
-		enemy_->Update();
-	}
-	enemyBullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
+	if (!isTitle) {
+		player_->Update();
+		if (!player_->IsDead() && !enemy_->IsDead()) {
+			enemy_->Update();
 		}
-		return false;
-	});
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Update();
+		enemyBullets_.remove_if([](EnemyBullet* bullet) {
+			if (bullet->IsDead()) {
+				delete bullet;
+				return true;
+			}
+			return false;
+		});
+		for (EnemyBullet* bullet : enemyBullets_) {
+			bullet->Update();
+		}
+
+		if (!player_->IsDead() && !enemy_->IsDead()) {
+			colliderManager_->Update(player_.get(), enemy_.get(), GetEnemyBullets());
+			lockOn_->Update(enemy_, viewProjection_);
+		} else {
+			endTimer++;
+		}
+
+		followCamera_->Update();
+		viewProjection_.matView = followCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+
+		skydome_->Update();
+		ground_->Update();
+		ReturnToTitle();
+	} else {
+		titleTimer++;
+		XINPUT_STATE joyState;
+		if (Input::GetInstance()->GetJoystickState(0, joyState) && (titleTimer > kTitleTime)) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				isTitle = false;
+				titleTimer = 0;
+			}
+		}
 	}
-
-	colliderManager_->Update(player_.get(), enemy_.get(), GetEnemyBullets());
-
-	if (!player_->IsDead() && !enemy_->IsDead()) {
-		lockOn_->Update(enemy_, viewProjection_);
-	}
-
-	followCamera_->Update();
-	viewProjection_.matView = followCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = followCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
-
-	skydome_->Update();
-	ground_->Update();
 
 	//================
 	// デバッグカメラ
@@ -179,9 +213,12 @@ void GameScene::Draw() {
 	ground_->Draw(viewProjection_);
 
 	enemy_->Draw(viewProjection_);
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Draw(viewProjection_);
+	if (!player_->IsDead() && !enemy_->IsDead() && !isTitle) {
+		for (EnemyBullet* bullet : enemyBullets_) {
+			bullet->Draw(viewProjection_);
+		}
 	}
+	
 
 	player_->Draw(viewProjection_);
 
@@ -200,6 +237,15 @@ void GameScene::Draw() {
 	enemy_->DrawUI();
 	player_->DrawUI();
 	lockOn_->Draw();
+	if (player_->IsDead()) {
+		spriteGameOver_->Draw();
+	}
+	if (enemy_->IsDead()) {
+		spriteGameClear_->Draw();
+	}
+	if (isTitle) {
+		spriteTitle_->Draw();
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -208,5 +254,17 @@ void GameScene::Draw() {
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
-	enemyBullets_.push_back(enemyBullet);
+	enemyBullets_.push_back(enemyBullet); }
+
+void GameScene::ReturnToTitle() {
+	if (endTimer > kEndTimer) {
+		XINPUT_STATE joyState;
+		if (Input::GetInstance()->GetJoystickState(0, joyState)) {
+			if (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				Reset();
+				isTitle = true;
+			}
+		}
+	}
+
 }
