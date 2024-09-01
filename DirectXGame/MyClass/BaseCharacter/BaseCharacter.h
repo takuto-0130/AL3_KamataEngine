@@ -3,8 +3,9 @@
 #include "ViewProjection.h"
 #include "DirectXCommon.h"
 #include "Model.h"
+#include "MyClass/Collider.h"
 
-class BaseCharacter {
+class BaseCharacter : public Collider {
 public:
 	/// <summary>
 	/// 初期化
@@ -31,7 +32,7 @@ public:
 
 	
 
-	Vector3 GetWorldPosition() { return Vector3{worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]}; }
+	Vector3 GetWorldPosition() const override { return Vector3{worldTransform_.matWorld_.m[3][0], worldTransform_.matWorld_.m[3][1], worldTransform_.matWorld_.m[3][2]}; }
 
 protected:
 	std::vector<Model*> models_;

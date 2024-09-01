@@ -1,5 +1,9 @@
 #include "Audio.h"
+#ifdef _DEBUG
+
 #include "AxisIndicator.h"
+
+#endif // _DEBUG
 #include "DirectXCommon.h"
 #include "GameScene.h"
 #include "ImGuiManager.h"
@@ -15,7 +19,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 汎用機能
 	Input* input = nullptr;
 	Audio* audio = nullptr;
+#ifdef _DEBUG
+
 	AxisIndicator* axisIndicator = nullptr;
+
+#endif // _DEBUG
 	PrimitiveDrawer* primitiveDrawer = nullptr;
 	GameScene* gameScene = nullptr;
 
@@ -49,10 +57,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 3Dモデル静的初期化
 	Model::StaticInitialize();
+#ifdef _DEBUG
 
 	// 軸方向表示初期化
 	axisIndicator = AxisIndicator::GetInstance();
 	axisIndicator->Initialize();
+
+#endif // _DEBUG
 
 	primitiveDrawer = PrimitiveDrawer::GetInstance();
 	primitiveDrawer->Initialize();
@@ -80,8 +91,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GlobalVariables::GetInstance()->Update();
 		// ゲームシーンの毎フレーム処理
 		gameScene->Update();
+
+#ifdef _DEBUG
+
 		// 軸表示の更新
 		axisIndicator->Update();
+
+#endif // _DEBUG
+
 		// ImGui受付終了
 		imguiManager->End();
 
@@ -89,8 +106,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		dxCommon->PreDraw();
 		// ゲームシーンの描画
 		gameScene->Draw();
+
+#ifdef _DEBUG
+
 		// 軸表示の描画
 		axisIndicator->Draw();
+
+#endif // _DEBUG
+
 		// プリミティブ描画のリセット
 		primitiveDrawer->Reset();
 		// ImGui描画

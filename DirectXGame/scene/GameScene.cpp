@@ -2,12 +2,21 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#ifdef _DEBUG
+
 #include "imgui.h"
+
+#endif // _DEBUG
+#include "PrimitiveDrawer.h"
 
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {
+GameScene::~GameScene() { 
+	delete colliderManager_;
+	for (EnemyBullet* bullet : enemyBullets_) {
+		delete bullet;
+	}
 }
 
 void GameScene::Initialize() {
@@ -50,6 +59,9 @@ void GameScene::Initialize() {
 		enemyModels_[EnemyParts::kEnemyBody].get(), enemyModels_[EnemyParts::kEnemyL_arm].get(), enemyModels_[EnemyParts::kEnemyR_arm].get()
 	};
 	enemy_->Initialize(enemyModels);
+	enemy_->SetPlayer(player_.get());
+	enemy_->SetGameScene(this);
+	enemy_->SetBulletModel(model_.get());
 
 	
 	debugCamera_ = std::make_unique <DebugCamera>(1280, 720);
@@ -67,13 +79,41 @@ void GameScene::Initialize() {
 	followCamera_ = std::make_unique<FollowCamera>();
 	followCamera_->Initialize();
 	followCamera_->SetTarget(&player_->GetWorldTransform());
+	followCamera_->SetPlayer(*player_.get());
 	player_->SetViewProjection(&followCamera_->GetViewProjection());
 
+	PrimitiveDrawer::GetInstance()->Initialize();
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+
+	lockOn_ = std::make_unique<LockOn>();
+	lockOn_->Initialize();
+	followCamera_->SetLockOn(*lockOn_);
+	player_->SetLockOn(*lockOn_);
+
+	colliderManager_ = new ColliderManager();
 }
 
 void GameScene::Update() { 
 	player_->Update();
-	enemy_->Update();
+	if (!player_->IsDead() && !enemy_->IsDead()) {
+		enemy_->Update();
+	}
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
+	colliderManager_->Update(player_.get(), enemy_.get(), GetEnemyBullets());
+
+	if (!player_->IsDead() && !enemy_->IsDead()) {
+		lockOn_->Update(enemy_, viewProjection_);
+	}
 
 	followCamera_->Update();
 	viewProjection_.matView = followCamera_->GetViewProjection().matView;
@@ -94,6 +134,9 @@ void GameScene::Update() {
 		} else {
 			isDebugCameraActive_ = true;
 		}
+	}
+	if (input_->TriggerKey(DIK_R)) {
+		enemy_->Reset();
 	}
 #endif // _DEBUG
 	if (isDebugCameraActive_) {
@@ -136,6 +179,10 @@ void GameScene::Draw() {
 	ground_->Draw(viewProjection_);
 
 	enemy_->Draw(viewProjection_);
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Draw(viewProjection_);
+	}
+
 	player_->Draw(viewProjection_);
 
 	// 3Dオブジェクト描画後処理
@@ -150,8 +197,16 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
+	enemy_->DrawUI();
+	player_->DrawUI();
+	lockOn_->Draw();
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
+	enemyBullets_.push_back(enemyBullet);
 }

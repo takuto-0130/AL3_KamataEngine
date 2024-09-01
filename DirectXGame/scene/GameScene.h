@@ -6,14 +6,17 @@
 #include "Model.h"
 #include "MyClass/Player/Player.h"
 #include "MyClass/Enemy/Enemy.h"
+#include "MyClass/Enemy/EnemyBullet.h"
 #include "MyClass/Skydome/Skydome.h"
 #include "MyClass/Ground/Ground.h"
 #include "MyClass/FollowCamera/FollowCamera.h"
+#include "MyClass/Collider/ColliderManager.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include <memory>
+#include "MyClass/Player/LockOn.h"
 
 /// <summary>
 /// ゲームシーン
@@ -46,6 +49,15 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 敵弾を追加
+	/// </summary>
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+
+private:
+	Enemy* GetEnemys() const { return enemy_.get(); }
+	const std::list<EnemyBullet*>& GetEnemyBullets() const { return enemyBullets_; }
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -69,6 +81,7 @@ private: // メンバ変数
 	std::unique_ptr<Enemy> enemy_;
 	std::unique_ptr<Model> enemyModel_;
 	std::vector<std::unique_ptr<Model>> enemyModels_;
+	std::list<EnemyBullet*> enemyBullets_;
 
 	std::unique_ptr<Model> skydomeModel_;
 	std::unique_ptr<Skydome> skydome_;
@@ -77,4 +90,9 @@ private: // メンバ変数
 	std::unique_ptr<Ground> ground_;
 
 	std::unique_ptr<FollowCamera> followCamera_;
+
+	// ロックオン
+	std::unique_ptr<LockOn> lockOn_;
+
+	ColliderManager* colliderManager_ = nullptr;
 };

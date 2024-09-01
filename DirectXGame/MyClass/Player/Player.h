@@ -1,17 +1,32 @@
 #pragma once
 #include "MyClass/BaseCharacter/BaseCharacter.h"
 #include "Input.h"
+#include "Model.h"
 #include "Sprite.h"
 #include <assert.h>
 #include <optional>
+#include "ViewProjection.h"
+#include "WorldTransform.h"
+#include "PlayerBullet.h"
+#include <list>
+
+const int kPlayerMaxHP = 15;
 
 struct WorkDash {
 	uint32_t dashParamater_ = 0;
-	int dashFrame = 10;
+	int dashFrame = 13;
 	int dashCurrentTime_ = 0;
-	float dashLength_ = 10.0f;
+	float dashLength_ = 15.0f;
 	Vector3 goalVector_{};
 };
+class LockOn;
+const int kPlayerBulletInterval = 12;
+
+const float kDashGaugeUp = 0.8f;
+const float kDashGaugeMax = 480.0f;
+const float kDashDecrease = 160.0f;
+
+const float kLimitRange = 80.0f;
 
 /// <summary>
 /// 自キャラ
@@ -19,10 +34,17 @@ struct WorkDash {
 class Player : public BaseCharacter {
 public:
 	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~Player();
+
+	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="models">モデルデータ配列</param>
 	void Initialize(const std::vector<Model*>& models) override;
+
+	void Reset();
 
 	void InitializeFloatingGimmick();
 
@@ -50,13 +72,37 @@ public:
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection) override;
 
+	void DrawUI();
+
 	void UpdateFlotingGimmick();
 
 	void SetViewProjection(const ViewProjection* viewProjection) { 
 		viewProjection_ = viewProjection;
 	}
 
+	void SetRotare(const float& rotate) { worldTransform_.rotation_.y = rotate; }
+
 	void ApplyGlobalVariables();
+
+	void Attack();
+
+	void PlayerUpdateMatrix();
+
+	Vector3 GetWorldPosition() const;
+
+	Vector3 GetHeadWorldPosition() const;
+
+	const Vector3 GetWorldPosition3DReticle();
+
+	void SetLockOn(const LockOn& lockOn) { lockOn_ = &lockOn; }
+
+	void MoveLimit();
+
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+
+	void OnCollision() override;
+
+	bool IsDead() const { return isDead_; }
 
 private:
 	WorldTransform worldTransformBody_;
@@ -73,8 +119,35 @@ private:
 	float rotateY = 0;
 	Input* input_ = nullptr;
 
+	std::unique_ptr<Model> model_;
+	std::list<PlayerBullet*> bullets_;
+	int32_t bulletInterval_ = 0;
 
-	
+	WorldTransform worldTransform3DReticle_;
+	std::unique_ptr<Sprite> sprite2DReticle_;
+	uint32_t textureReticle;
+
+	std::unique_ptr<Sprite> spriteEdge_;
+	uint32_t textureEdge;
+
+	std::unique_ptr<Sprite> spriteGauge_;
+	uint32_t textureGauge;
+
+	std::unique_ptr<Sprite> spriteCoolDown_;
+	uint32_t textureCoolDown;
+
+	bool isLockOn_ = false;
+
+	float dashGauge = 0;
+
+	const LockOn* lockOn_ = nullptr;
+
+	const float radius_ = 1.0f;
+
+	int HP_;
+
+	bool isDead_ = false;
+
 #pragma region
 
 	int furiageWaite_ = 0;
