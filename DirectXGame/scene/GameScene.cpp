@@ -8,6 +8,11 @@
 #include <fstream>
 #include <istream>
 
+#ifdef _DEBUG
+#include "imgui.h"
+#endif // DEBUG_
+
+
 const Vector3 TPSRailCameraPos{0, 0, -30};
 
 GameScene::GameScene() {}
@@ -29,20 +34,23 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
-
+#pragma region // インスタンスの取得や初期化
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	PrimitiveDrawer::GetInstance()->Initialize();
+	viewProjection_.Initialize();
+#pragma endregion
+
+#pragma region // プレイヤーの初期化
 	texHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
 	model_ = Model::Create();
-	viewProjection_.Initialize();
 
 	player_ = new Player();
 	Vector3 playerPos{0, 0, 30};
 	player_->Initialize(model_, texHandle_, playerPos);
 	TextureManager::Load("./Resources/reticle.png");
-
-	PopEnemy({10,0,50});
+#pragma endregion
 
 	debugCamera_ = new DebugCamera(1280, 720);
 	AxisIndicator::GetInstance()->SetVisible(true);
@@ -59,8 +67,9 @@ void GameScene::Initialize() {
 
 	colliderManager_ = new ColliderManager();
 
-	LoadEnemyPopData();
+	//LoadEnemyPopData();
 
+#pragma region // レール設定
 	controlPoints_ = {
 	    {0,  0,  0},
         {10, 10, 10},
@@ -69,109 +78,48 @@ void GameScene::Initialize() {
         {20, 0,  35},
         {30, 0,  40}
     };
-
+	segmentCount = oneSegmentCount * controlPoints_.size();
 	for (size_t i = 0; i < segmentCount + 1; i++) {
 		float t = 1.0f / segmentCount * i;
 		Vector3 pos = CatmullRomPosition(controlPoints_, t);
 		pointsDrawing_.push_back(pos);
 	}
-	PrimitiveDrawer::GetInstance()->Initialize();
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
+#pragma endregion
 }
 
 void GameScene::Update() { 
-	//if (cameraEyeT < 1.0f) {
-	//	cameraEyeT += cameraSegmentCount;
-	//	cameraForwardT += cameraSegmentCount;
-	//	Vector3 eye = CatmullRomPosition(controlPoints_, cameraEyeT);
-	//	eye.y += 1.0f;
-	//	railCamera_->Translate(eye);
-	//	Vector3 forward = CatmullRomPosition(controlPoints_, cameraForwardT);
-	//	forward.y += 1.0f;
-	//	forward = forward - eye;
-	//	if (cameraForwardT <= 1.0f) {
-	//		Vector3 rotateCametra{};
-	//		// Y軸周り角度(θy)
-	//		rotateCametra.y = std::atan2(forward.x, forward.z);
-	//		float length = Length({forward.x, 0, forward.z});
-	//		// X軸周り角度(θx)
-	//		rotateCametra.x = std::atan2(-forward.y, length);
-	//		railCamera_->Rotate(rotateCametra);
-	//	}
-	//}
+
+	RailCustom();
+
+	if (input_->TriggerKey(DIK_P)) {
+		RailReDrawing();
+	}
+
 	changeFPSTPS();
-	if (isFPS_) {
-		railCamera_->Translate(player_->GetWorldPosition());
-		railCamera_->Rotate(player_->GetRotate());
-	}
-	railCamera_->Update();
-	viewProjection_.matView = railCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
-	viewProjection_.TransferMatrix();
+	
+	ViewProjectionUpdate();
 
-	player_->Update(viewProjection_); 
-
-	UpdateEnemyPopCommands();
-
-	enemys_.remove_if([](Enemy* enemy) {
-		if (enemy->IsDead()) {
-			delete enemy;
-			return true;
-		}
-		return false;
-	});
-	for (Enemy* enemy : enemys_) {
-		enemy->Update();
-	}
-	player_->SetEnemy(enemys_);
-
-	enemyBullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
-	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Update();
-	}
-
-	colliderManager_->Update(player_, GetEnemys(), GetEnemyBullets());
+	CharacterUpdate();
 
 	skydome_->Update();
 
-	debugCamera_->Update();
-
-#ifdef _DEBUG
-	if (input_->TriggerKey(DIK_L)) {
-		if (isDebugCameraActive_ == true) {
-			isDebugCameraActive_ = false;
-		} else {
-			isDebugCameraActive_ = true;
-		}
-	}
-#endif // _DEBUG
-	if (isDebugCameraActive_) {
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	} else {
-		//viewProjection_.UpdateMatrix();
-	}
+	DebugCameraUpdate();
 }
 
 void GameScene::Draw() {
 
+#pragma region 描画前
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+#pragma endregion
 
-#pragma region 背景スプライト描画
+#pragma region 背景
 	// 背景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
-	/// <summary>
-	/// ここに背景スプライトの描画処理を追加できる
-	/// </summary>
+	// ↓背景
+
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -179,14 +127,14 @@ void GameScene::Draw() {
 	dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
-#pragma region 3Dオブジェクト描画
+#pragma region 3Dオブジェクト
 	// 3Dオブジェクト描画前処理
 	Model::PreDraw(commandList);
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	skydome_->Draw(viewProjection_);
+	//skydome_->Draw(viewProjection_);
 
 	for (Enemy* enemy : enemys_) {
 		enemy->Draw(viewProjection_);
@@ -197,7 +145,7 @@ void GameScene::Draw() {
 	}
 
 
-	player_->Draw(viewProjection_);
+	//player_->Draw(viewProjection_);
 
 
 	for (size_t i = 0; i < segmentCount; i++) {
@@ -210,7 +158,7 @@ void GameScene::Draw() {
 	Model::PostDraw();
 #pragma endregion
 
-#pragma region 前景スプライト描画
+#pragma region 前景
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
 
@@ -218,7 +166,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	player_->DrawUI(viewProjection_);
+	//player_->DrawUI(viewProjection_);
 
 
 	// スプライト描画後処理
@@ -297,6 +245,44 @@ void GameScene::UpdateEnemyPopCommands() {
 	}
 }
 
+void GameScene::ViewProjectionUpdate() {
+	railCamera_->Update();
+	viewProjection_.matView = railCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+	viewProjection_.TransferMatrix();
+}
+
+void GameScene::CharacterUpdate() {
+	player_->Update(viewProjection_);
+
+	// UpdateEnemyPopCommands();
+
+	enemys_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+	for (Enemy* enemy : enemys_) {
+		enemy->Update();
+	}
+	player_->SetEnemy(enemys_);
+
+	enemyBullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
+	for (EnemyBullet* bullet : enemyBullets_) {
+		bullet->Update();
+	}
+
+	// colliderManager_->Update(player_, GetEnemys(), GetEnemyBullets());
+}
+
 void GameScene::changeFPSTPS() {
 	if (input_->TriggerKey(DIK_F)) {
 		if (isFPS_ == true) {
@@ -310,4 +296,67 @@ void GameScene::changeFPSTPS() {
 			railCamera_->SetParent(&player_->GetWorldTransform());
 		}
 	}
+	if (isFPS_) {
+		railCamera_->Translate(player_->GetWorldPosition());
+		railCamera_->Rotate(player_->GetRotate());
+	}
+}
+
+void GameScene::RailCustom() {
+#ifdef _DEBUG
+	int32_t i = 0;
+	ImGui::Begin("Rail");
+	ImGui::Text("ReDraw : P");
+	for (Vector3& pos : controlPoints_) {
+		i++;
+		/*ImGui::Text("%d.", i);
+		ImGui::SameLine();*/
+		std::string label = "controlPoint." + std::to_string(i);
+		ImGui::DragFloat3(label.c_str(), &pos.x, 0.1f);
+	}
+	if (ImGui::Button("addControlPoint")) {
+		Vector3 pos = controlPoints_.back();
+		controlPoints_.push_back(pos);
+		segmentCount = oneSegmentCount * controlPoints_.size();
+		RailReDrawing();
+	}
+	ImGui::End();
+#endif // _DEBUG
+}
+
+void GameScene::RailReDrawing() {
+	pointsDrawing_.clear();
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		float t = 1.0f / segmentCount * i;
+		Vector3 pos = CatmullRomPosition(controlPoints_, t);
+		pointsDrawing_.push_back(pos);
+	}
+}
+
+void GameScene::DebugCameraUpdate() {
+	debugCamera_->Update();
+
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_L)) {
+		if (isDebugCameraActive_ == true) {
+			isDebugCameraActive_ = false;
+		} else {
+			isDebugCameraActive_ = true;
+		}
+	}
+#endif // _DEBUG
+	if (isDebugCameraActive_) {
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
+}
+
+void GameScene::RailCreate() { 
+	Vector3 frontVec{};
+	Vector3 upVec{};
+	Vector3 leftVec = Cross(upVec, frontVec);
+	
 }

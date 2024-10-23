@@ -73,8 +73,20 @@ private:
 	const std::list<Enemy*>& GetEnemys() const { return enemys_; }
 	const std::list<EnemyBullet*>& GetEnemyBullets() const { return enemyBullets_; }
 
+	void ViewProjectionUpdate();
+
+	void CharacterUpdate();
+
 
 	void changeFPSTPS();
+
+	void RailCustom();
+
+	void RailReDrawing();
+
+	void DebugCameraUpdate();
+
+	void RailCreate();
 
 
 private: // メンバ変数
@@ -106,7 +118,8 @@ private: // メンバ変数
 
 	std::vector<Vector3> controlPoints_;
 	std::vector<Vector3> pointsDrawing_;
-	const size_t segmentCount = 100;
+	size_t oneSegmentCount = 20;
+	size_t segmentCount = oneSegmentCount;
 	const float cameraSegmentCount = 1.0f / 600.0f;
 	float cameraEyeT = 0;
 	float cameraForwardT = 30.0f / 600.0f;

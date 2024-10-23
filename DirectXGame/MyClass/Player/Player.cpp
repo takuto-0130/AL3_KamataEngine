@@ -76,10 +76,15 @@ void Player::Update(ViewProjection& viewProjection) {
 	}
 	viewProjection_.matView = Inverse(worldTransform_.matWorld_);
 	float inputFloat3[3] = {GetWorldPosition().x};
-	
-	ImGui::Begin("player");
+#ifdef _DEBUG
+
+	/*ImGui::Begin("player");
 	ImGui::InputFloat3("Player", inputFloat3);
-	ImGui::End();
+	ImGui::End();*/
+
+#endif // _DEBUG
+
+	
 }
 
 void Player::Rotate() { 
