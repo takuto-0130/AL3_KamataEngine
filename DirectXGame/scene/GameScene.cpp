@@ -84,12 +84,20 @@ void GameScene::Initialize() {
 		Vector3 pos = CatmullRomPosition(controlPoints_, t);
 		pointsDrawing_.push_back(pos);
 	}
+	for (Vector3& pos : controlPoints_) {
+		PopEnemy(pos);
+	}
+	for (Enemy* enemy : enemys_) {
+		enemy->Update();
+	}
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 #pragma endregion
 }
 
 void GameScene::Update() { 
 
+	RailCameraDebug();
+	//RailCameraMove();
 	RailCustom();
 
 	if (input_->TriggerKey(DIK_P)) {
@@ -100,7 +108,7 @@ void GameScene::Update() {
 	
 	ViewProjectionUpdate();
 
-	CharacterUpdate();
+	//CharacterUpdate();
 
 	skydome_->Update();
 
@@ -134,7 +142,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	//skydome_->Draw(viewProjection_);
+	skydome_->Draw(viewProjection_);
 
 	for (Enemy* enemy : enemys_) {
 		enemy->Draw(viewProjection_);
@@ -284,7 +292,7 @@ void GameScene::CharacterUpdate() {
 }
 
 void GameScene::changeFPSTPS() {
-	if (input_->TriggerKey(DIK_F)) {
+	/*if (input_->TriggerKey(DIK_F)) {
 		if (isFPS_ == true) {
 			isFPS_ = false;
 			railCamera_->SetParent(nullptr);
@@ -299,7 +307,7 @@ void GameScene::changeFPSTPS() {
 	if (isFPS_) {
 		railCamera_->Translate(player_->GetWorldPosition());
 		railCamera_->Rotate(player_->GetRotate());
-	}
+	}*/
 }
 
 void GameScene::RailCustom() {
@@ -331,6 +339,19 @@ void GameScene::RailReDrawing() {
 		Vector3 pos = CatmullRomPosition(controlPoints_, t);
 		pointsDrawing_.push_back(pos);
 	}
+	enemys_.remove_if([](Enemy* enemy) {
+		if (!enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+	for (Vector3& pos : controlPoints_) {
+		PopEnemy(pos);
+	}
+	for (Enemy* enemy : enemys_) {
+		enemy->Update();
+	}
 }
 
 void GameScene::DebugCameraUpdate() {
@@ -350,7 +371,7 @@ void GameScene::DebugCameraUpdate() {
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	} else {
-		viewProjection_.UpdateMatrix();
+		//viewProjection_.UpdateMatrix();
 	}
 }
 
@@ -359,4 +380,63 @@ void GameScene::RailCreate() {
 	Vector3 upVec{};
 	Vector3 leftVec = Cross(upVec, frontVec);
 	
+}
+
+void GameScene::RailCameraMove() {
+	if (cameraForwardT <= 1.0f) {
+		cameraEyeT += cameraSegmentCount;
+		cameraForwardT += cameraSegmentCount;
+		Vector3 eye = CatmullRomPosition(controlPoints_, cameraEyeT);
+		eye.y += 0.5f;
+		railCamera_->Translate(eye);
+		Vector3 forward = CatmullRomPosition(controlPoints_, cameraForwardT);
+		forward.y += 0.5f;
+		forward = forward - eye;
+		if (cameraForwardT <= 1.0f) {
+			Vector3 rotateCametra{};
+			// Y軸周り角度(θy)
+			rotateCametra.y = std::atan2(forward.x, forward.z);
+			float length = Length({forward.x, 0, forward.z});
+			// X軸周り角度(θx)
+			rotateCametra.x = std::atan2(-forward.y, length);
+			railCamera_->Rotate(rotateCametra);
+		}
+	}
+#ifdef _DEBUG
+	ImGui::Begin("RailCamera");
+	ImGui::Text("eye%.03f", cameraEyeT);
+	ImGui::Text("forward%.03f", cameraForwardT);
+	ImGui::End();
+#endif // _DEBUG
+}
+
+void GameScene::RailCameraDebug() { 
+#ifdef _DEBUG
+	ImGui::Begin("RailCamera");
+	if (ImGui::Button("StartCamera")) {
+		isRailCameraMove_ = true;
+	}
+	if (ImGui::Button("StopCamera")) {
+		isRailCameraMove_ = false;
+	}
+	if (ImGui::Button("ResetCamera")) {
+		ResetRailCamera();
+		RailCameraMove();
+	}
+	if (isRailCameraMove_) {
+		RailCameraMove();
+	}
+	ImGui::End();
+#endif // _DEBUG
+}
+
+void GameScene::SetSegment() {
+	float segmentDenominator = kDivisionSpan * controlPoints_.size();
+	cameraSegmentCount = 1.0f / segmentDenominator;
+}
+
+void GameScene::ResetRailCamera() {
+	float segmentDenominator = kDivisionSpan * controlPoints_.size();
+	cameraEyeT = 0;
+	cameraForwardT = 30.0f / segmentDenominator;
 }

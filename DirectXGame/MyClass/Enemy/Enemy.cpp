@@ -23,6 +23,7 @@ void Enemy::Initialize(Model* model, uint32_t texHandle, Vector3 position) {
 	texHandle_ = texHandle;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
+	worldTransform_.scale_ = {0.3f, 0.3f, 0.3f};
 	velocity_ = {0, 0, kEnemySpeed};
 	bulletInterval_ = kBulletInterval;
 	SetRadius(radius_);

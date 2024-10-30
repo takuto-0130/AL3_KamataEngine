@@ -88,6 +88,14 @@ private:
 
 	void RailCreate();
 
+	void RailCameraMove();
+
+	void RailCameraDebug();
+
+	void SetSegment();
+
+	void ResetRailCamera();
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -120,9 +128,13 @@ private: // メンバ変数
 	std::vector<Vector3> pointsDrawing_;
 	size_t oneSegmentCount = 20;
 	size_t segmentCount = oneSegmentCount;
-	const float cameraSegmentCount = 1.0f / 600.0f;
+
+	const float kDivisionSpan = 100.0f;
+	float cameraSegmentCount = 1.0f / 600.0f;
 	float cameraEyeT = 0;
 	float cameraForwardT = 30.0f / 600.0f;
 
 	bool isFPS_ = false;
+
+	bool isRailCameraMove_ = false;
 };
