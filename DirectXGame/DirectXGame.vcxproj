@@ -115,6 +115,7 @@
     <ClCompile Include="MyClass\Collider\ColliderManager.cpp" />
     <ClCompile Include="MyClass\Enemy\Enemy.cpp" />
     <ClCompile Include="MyClass\Enemy\EnemyBullet.cpp" />
+    <ClCompile Include="MyClass\GlobalVariables\GlobalVariables.cpp" />
     <ClCompile Include="MyClass\math\mathFunc.cpp" />
     <ClCompile Include="MyClass\math\Matrix4x4Func.cpp" />
     <ClCompile Include="MyClass\math\operatorOverload.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="MyClass\CollisionConfig.h" />
     <ClInclude Include="MyClass\Enemy\Enemy.h" />
     <ClInclude Include="MyClass\Enemy\EnemyBullet.h" />
+    <ClInclude Include="MyClass\GlobalVariables\GlobalVariables.h" />
     <ClInclude Include="MyClass\math\mathFunc.h" />
     <ClInclude Include="MyClass\math\Matrix4x4Func.h" />
     <ClInclude Include="MyClass\math\operatorOverload.h" />

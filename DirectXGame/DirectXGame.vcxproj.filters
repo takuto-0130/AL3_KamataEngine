@@ -153,6 +153,9 @@
     <ClCompile Include="MyClass\Collider\ColliderManager.cpp">
       <Filter>ソース ファイル\MyClass\Collider</Filter>
     </ClCompile>
+    <ClCompile Include="MyClass\GlobalVariables\GlobalVariables.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\ViewProjection.h">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="MyClass\Collider\ColliderManager.h">
       <Filter>ヘッダー ファイル\Myclass\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="MyClass\GlobalVariables\GlobalVariables.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
