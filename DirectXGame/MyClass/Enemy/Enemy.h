@@ -94,6 +94,10 @@ public:
 
 	void ChangeState(std::unique_ptr<BaseEnemyState> state);
 
+	void SetRotate(const Vector3& rota) { worldTransform_.rotation_ = rota; }
+
+	void UpdateTransform() { worldTransform_.UpdateMatrix(); }
+
 private:
 
 	GameScene* gameScene_ = nullptr;

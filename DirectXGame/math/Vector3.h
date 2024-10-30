@@ -35,4 +35,8 @@ struct Vector3 final {
 		z = z / a;
 		return *this;
 	}
+
+	bool operator==(const Vector3& a) const { 
+		return (x == a.x && y == a.y && z == a.z);
+	}
 };

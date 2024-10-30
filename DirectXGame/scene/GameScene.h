@@ -55,7 +55,30 @@ public: // メンバ関数
 	/// <summary>
 	/// 敵のスポーン
 	/// </summary>
-	void PopEnemy(Vector3 position);
+	void PopEnemy(Vector3 position) {
+
+		Enemy* enemy = new Enemy();
+		enemy->Initialize(model_, texHandle_, position);
+		enemy->SetPlayer(player_);
+		enemy->SetGameScene(this);
+		enemy->UpdateTransform();
+
+		enemys_.push_back(enemy);
+	}
+	/// <summary>
+	/// re-ruのスポーン()
+	/// </summary>
+	void PopEnemy(Vector3 position, Vector3 rota) {
+
+		Enemy* enemy = new Enemy();
+		enemy->Initialize(model_, texHandle_, position);
+		enemy->SetPlayer(player_);
+		enemy->SetGameScene(this);
+		enemy->SetRotate(rota);
+		enemy->UpdateTransform();
+
+		enemys_.push_back(enemy);
+	}
 
 	/// <summary>
 	/// 敵のスポーンデータの読み込み
@@ -82,7 +105,9 @@ private:
 
 	void RailCustom();
 
-	void RailReDrawing();
+	void RailLineReDraw();
+
+	void RailReDraw();
 
 	void DebugCameraUpdate();
 
@@ -113,6 +138,7 @@ private: // メンバ変数
 	int32_t enemyPopTimer_ = 0;
 
 	bool isDebugCameraActive_ = false;
+	bool isDebugCameraUpdate_ = true;
 	DebugCamera* debugCamera_ = nullptr;
 
 	Skydome* skydome_ = nullptr;

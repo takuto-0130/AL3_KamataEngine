@@ -84,12 +84,24 @@ void GameScene::Initialize() {
 		Vector3 pos = CatmullRomPosition(controlPoints_, t);
 		pointsDrawing_.push_back(pos);
 	}
-	for (Vector3& pos : controlPoints_) {
-		PopEnemy(pos);
+	size_t i = 0;
+	for (Vector3& v : pointsDrawing_) {
+		if (pointsDrawing_[i] == pointsDrawing_.back()) {
+			break;
+		}
+		++i;
+		Vector3 rotateRail{};
+		Vector3 forward = pointsDrawing_[i] - v;
+		// Y軸周り角度(θy)
+		rotateRail.y = std::atan2(forward.x, forward.z);
+		float length = Length({forward.x, 0, forward.z});
+		// X軸周り角度(θx)
+		rotateRail.x = std::atan2(-forward.y, length);
+		PopEnemy(v, rotateRail);
 	}
-	for (Enemy* enemy : enemys_) {
+	/*for (Enemy* enemy : enemys_) {
 		enemy->Update();
-	}
+	}*/
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&viewProjection_);
 #pragma endregion
 }
@@ -101,7 +113,10 @@ void GameScene::Update() {
 	RailCustom();
 
 	if (input_->TriggerKey(DIK_P)) {
-		RailReDrawing();
+		RailReDraw();
+	}
+	if (input_->TriggerKey(DIK_O)) {
+		RailLineReDraw();
 	}
 
 	changeFPSTPS();
@@ -186,16 +201,6 @@ void GameScene::Draw() {
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
 
 	enemyBullets_.push_back(enemyBullet);
-}
-
-void GameScene::PopEnemy(Vector3 position) {
-
-	Enemy* enemy = new Enemy();
-	enemy->Initialize(model_, texHandle_, position);
-	enemy->SetPlayer(player_);
-	enemy->SetGameScene(this);
-	
-	enemys_.push_back(enemy);
 }
 
 void GameScene::LoadEnemyPopData() { 
@@ -326,13 +331,14 @@ void GameScene::RailCustom() {
 		Vector3 pos = controlPoints_.back();
 		controlPoints_.push_back(pos);
 		segmentCount = oneSegmentCount * controlPoints_.size();
-		RailReDrawing();
+		SetSegment();
+		RailLineReDraw();
 	}
 	ImGui::End();
 #endif // _DEBUG
 }
 
-void GameScene::RailReDrawing() {
+void GameScene::RailLineReDraw() {
 	pointsDrawing_.clear();
 	for (size_t i = 0; i < segmentCount + 1; i++) {
 		float t = 1.0f / segmentCount * i;
@@ -349,13 +355,37 @@ void GameScene::RailReDrawing() {
 	for (Vector3& pos : controlPoints_) {
 		PopEnemy(pos);
 	}
-	for (Enemy* enemy : enemys_) {
-		enemy->Update();
+}
+
+void GameScene::RailReDraw() {
+	enemys_.remove_if([](Enemy* enemy) {
+		if (!enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+	size_t i = 0;
+	for (Vector3& v : pointsDrawing_) {
+		if (pointsDrawing_[i] == pointsDrawing_.back()) {
+			break;
+		}
+		++i;
+		Vector3 rotateRail{};
+		Vector3 forward = pointsDrawing_[i] - v;
+		// Y軸周り角度(θy)
+		rotateRail.y = std::atan2(forward.x, forward.z);
+		float length = Length({forward.x, 0, forward.z});
+		// X軸周り角度(θx)
+		rotateRail.x = std::atan2(-forward.y, length);
+		PopEnemy(v, rotateRail);
 	}
 }
 
 void GameScene::DebugCameraUpdate() {
-	debugCamera_->Update();
+	if (isDebugCameraUpdate_) {
+		debugCamera_->Update();
+	}
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_L)) {
@@ -363,6 +393,13 @@ void GameScene::DebugCameraUpdate() {
 			isDebugCameraActive_ = false;
 		} else {
 			isDebugCameraActive_ = true;
+		}
+	}
+	if (input_->TriggerKey(DIK_K)) {
+		if (isDebugCameraUpdate_ == true) {
+			isDebugCameraUpdate_ = false;
+		} else {
+			isDebugCameraUpdate_ = true;
 		}
 	}
 #endif // _DEBUG
