@@ -7,6 +7,9 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "Player/Player.h"
+#include "Player/InputHandler.h"
+#include "Player/Command.h"
 
 /// <summary>
 /// ゲームシーン
@@ -47,4 +50,7 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	std::unique_ptr<Player> player_ = nullptr;
+	std::unique_ptr<InputHandler> inputHandler_ = nullptr;
+	ICommand* iCommand_ = nullptr;
 };

@@ -11,9 +11,25 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	player_ = std::make_unique<Player>();
+	player_->Init();
+
+	inputHandler_ = std::make_unique<InputHandler>();
+	inputHandler_->AssinMoveRightCommand2PressKeyD();
+	inputHandler_->AssinMoveLeftCommand2PressKeyA();
 }
 
-void GameScene::Update() {}
+void GameScene::Update() { 
+	iCommand_ = inputHandler_->HandleInput();
+
+	if (iCommand_) {
+		iCommand_->Exec(*player_.get());
+	}
+	
+	player_->Update();
+
+}
 
 void GameScene::Draw() {
 
@@ -53,6 +69,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
